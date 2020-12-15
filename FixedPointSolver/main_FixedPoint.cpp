@@ -1,55 +1,77 @@
-/*
- * test_FixedPoint.cpp
- *
- *  Created on: Feb 1, 2020
- *      Author: forma
- */
-#include <cmath>
-#include "FixedPointIteration.hpp"
-#include "Eigen/Dense"
-#include "FixedPointTraits.hpp"
-#include <iostream>
+#include "FixedPointIterator.hpp"
+#include "GetPot"
+#include "MM_readers3.3.hpp"
+#include "AcceleratorFactory.hpp"
 
-int main()
-  {
-    using namespace apsc;
-    using FixedPointIterator=FixedPointIteration<VectorTraits>;
-    using IterationFunction=FixedPointIterator::IterationFunction;
-
-    IterationFunction phi;
-    // A simple iterator function that we know converges to (y(lambda), 0.739085)
-    // where y(lambda)=0 if  |lambda|<1
-    // if |lambda|<1 convergence to 0 , slow if |lambda| near to 1
-    // at least for the non accelerated version
-    // if |lambda| =1 the fixed point (0,0.739085) is unstable. In general, we do not converge.
-    // if |lambda| >1 we have two fixed points, one of which is with  y=0 and is unstable, the other is stable
-    //                and we converge to the second one
-    // Try to change lambda and see what happens
-    double lambda=0.5;
-    phi=[lambda](FixedPointIterator::ArgumentType const & x){return std::vector<double>{lambda*std::sin(x[0]),std::cos(x[1])}; };
-    
-    FixedPointIterator iterate{phi};
-    FixedPointIterator::ArgumentType startingPoint{5.0,7.0};
-    std::cout<<"*** WITH BASIC METHOD:\n";
-    print_result(iterate.compute(startingPoint));
-    // Now with acceleration and Eigen
-    using   FixedPointIterator2=apsc::FixedPointIteration<EigenTraits,ASecantAccelerator>;
-    using IterationFunction2=FixedPointIterator2::IterationFunction;
-    IterationFunction2 phi2;
-    phi2 = [lambda](FixedPointIterator2::ArgumentType const & x)
-                     {
-                       FixedPointIterator2::ArgumentType res(2);
-                       res[0]=lambda*std::sin(x[0]);
-                       res[1]=std::cos(x[1]);
-                       return res;
-                     };
-    FixedPointIterator2 iterate2{phi2};
-    FixedPointIterator2::ArgumentType startingPoint2(2);
-    startingPoint2[0]=5.0;
-    startingPoint2[1]=7.0;
-    std::cout<<"*** WITH SECANT ACCELERATION:\n";
-    print_result(iterate2.compute(startingPoint2));
-  }
+int main(int argc, char** argv)
+{
+	using namespace FixedPoint;
+	GetPot get_filename (argc, argv);
+	std::string filename = get_filename ("filename", "data.txt");
+	
+	GetPot get_problem_data (filename.c_str ());
+	
+	double lambda = get_problem_data ("lambda",  18.);
+	using Vector = Traits::Vector; // Traits is a macro defined in Accelerators.hpp, if not defined in other ways
+	using Matrix = Traits::Matrix;
+	// a function from R^2 to R^2... 
+	auto phi_1 = [lambda] (Vector const & x){
+		Vector vec(2);
+		vec.coeffRef(0) = lambda*std::sin( x.coeff(0) );
+		vec.coeffRef(1) = std::cos( x.coeff(1) );
+		return vec; 
+		};
+	// ... and a starting point
+	Vector startingPoint_1(2);
+	startingPoint_1.coeffRef(0) = 5;
+	startingPoint_1.coeffRef(1) = 7;
+	
+	//The iterator object
+	FixedPointIterator FPI_1;
+	FPI_1.setIterator( makeIterator (NoAccelerator, phi_1, 2) ); // care that phi_1 has been moved
+	
+	//Solving
+	std::cout<<"*** WITH BASIC METHOD:\n";
+	FPI_1.compute(startingPoint_1);
+	FPI_1.printResult();
+	
+	// Now with the acceleration provided by the alternate secant method
+	FPI_1.reset();
+	FPI_1.setIterator( makeIterator (ASecantAccel, FPI_1.getIterator().getIterationFunction(), 2) );
+	
+	//Solving
+	std::cout<<"*** WITH SECANT ACCELERATION:\n";
+	FPI_1.compute(startingPoint_1);
+	FPI_1.printResult();
+	
+	// Now we solve iteratively a sparse linear system.
+	#include<Eigen/IterativeLinearSolvers>
+	// reading the matrix and the RHS
+	std::string matrix_filename = get_problem_data ( "MMMfile", "cavity15.mtx" );
+	std::string vector_filename = get_problem_data ( "MMVfile", "cavity15_rhs1.mtx" );
+	Matrix MMM = Eigen::read_MM_Matrix <Matrix> ( matrix_filename );
+	Vector MMV = Eigen::read_MM_Vector <Vector> ( vector_filename );
+	
+	// Eigen::BiCGSTAB <SparseMatrix<double> > solver;
+	
+	// // a starting point
+	// Vector startingPoint_2 = Vector.setRandom (MMV.size());
+	
+	
+	// FixedPointIterator FPI_2 { makeIterator (NoAccelerator, ???)};
+	
+	// //Solving
+	// std::cout<<"*** WITH BASIC METHOD:\n";
+	// FPI_2.printResult(FPI_2.compute(startingPoint_2));
+	
+	// // Now with the acceleration provided by the alternate secant method
+	
+	// FPI_2.setAccelerator( makeIterator (ASecantAccel, FPI_2.getIterator().getIterationFunction()) );
+	
+	// //Solving
+	// std::cout<<"*** WITH SECANT ACCELERATION:\n";
+	// FPI_2.printResult(FPI_2.compute(startingPoint_2));
+}
 
 
 
