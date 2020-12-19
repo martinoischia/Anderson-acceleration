@@ -1,10 +1,12 @@
 #include "Accelerators.hpp"
+#include <Eigen/QR>
+
 namespace FixedPoint
-{
+{	
 	Traits::Vector  ASecantAccelerator::operator()(const std::deque < Vector > & past)
 	{
-		Vector xNew(dimension);
-		
+		assert (!past.empty());
+		Vector xNew (dimension);
 		if (firstTime)
 		{
 			xNew = phi (past.back());
@@ -14,11 +16,11 @@ namespace FixedPoint
 		}
 		else
 		{
+			Vector tmp (dimension), deltaXNew (dimension);
 			xNew = phi (past.back());
 			// compute \Delta x_n = phi(x_n)-x_n
 			deltaXNew = xNew - past.back();
 			
-			Vector tmp (dimension);
 			// \Delta x_n - \Delta x_{n-1}
 			tmp = deltaXNew - deltaXOld;
 			// Get ||\Delta x_n - \Delta x_{n-1}||^2
@@ -37,42 +39,67 @@ namespace FixedPoint
 		}
 		
 		return xNew ;
-	
+		
 	}
 	
-	// Traits::Vector  GeneralAndersonAccelerator::operator()(Traits::Vector const & x0){
-	// auto dimension = x0.size() ;
-	
-	// if (history.empty())		{ history.emplace_back( x0 ) ;}
-	// if (history.size == 1 ; ) { history.emplace_back ( phi (x0)) ;}
-	
-	// int k = history.size() - 1;
-	// int m_k = std::min ( m, k )
-	// for ()
-	
-	// using ResidualMatrix = EigenTraits::Matrix;
-	// ResidualMatrix F ( size, m );
-	
-	// Eigen::Map < Vector > v (F.data(), size);
-	// v = history[1] - history[0] ;
-	
-	
-	// int iter = history.size() ;
-	
-	// do{
-	
-	// new (&v) Eigen::Map < Vector> (F.data() + size, size);
-	// // v = 
-	// ++iter;
-	// }
-	// while (iter <= m) ;
-	
-	// do
-	
-	// std::size_t index ;
-	
-	// return x1;
-	// }
+	Traits::Vector  AndersonAccelerator::operator()(const std::deque < Vector > & past){
+		
+		assert (!past.empty());
+		if ( past.size() == 1 )
+		{ 
+			evaluation_history.emplace_back( phi (past[0]) );
+			Vector & solution = evaluation_history.back();
+			evaluation_history.emplace_back( phi (solution) );
+			evaluated = true;
+			return ( solution ) ;
+		}
+		
+		else
+		{
+			if ( !evaluated ) 
+			{
+				evaluate ( past );
+				evaluated = true;
+			}
+			
+			int m_k = evaluation_history.size()-1;
+			
+			//build "delta x" matrix
+			
+			AndersonMatrix X ( dimension, m_k );
+			for (int j = 0; j < m_k; ++j )
+			{
+				for (int i = 0; i < dimension; ++i )
+				{
+					X (i,j) = past [ past.size()-m_k+j ](i)- past [ past.size()-m_k+j-1 ](i) ;
+				}		
+			}
+			
+			//Build "delta residual" matrix
+			AndersonMatrix F ( dimension, m_k );
+			for (int j = 0; j < m_k; ++j )
+			{
+				for (int i = 0; i < dimension; ++i )
+				{
+					F (i,j) = 
+					evaluation_history [ evaluation_history.size()-m_k+j ](i)- past [ past.size()-m_k+j ](i) -
+					evaluation_history [ evaluation_history.size()-m_k+j-1 ](i) + past [ past.size()-m_k+j-1 ](i);
+				}		
+			}
+			
+			//Calculating the solution
+			
+			Vector f = evaluation_history.back() - past.back() ;
+			Vector solution ;
+			solution = past.back() + mixingParameter*f - ( X + mixingParameter*F)*F.colPivHouseholderQr().solve(f) ;
+			
+			evaluation_history.emplace_back( phi ( solution ));
+			if (evaluation_history.size() > memory) 
+			evaluation_history.pop_front();
+			
+			return solution;
+		}
+	}
 	
 }	
 

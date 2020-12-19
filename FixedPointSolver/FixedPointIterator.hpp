@@ -32,8 +32,8 @@
 				return options;
 			}
 			
-			void setOptions(const FixedPointOptions& options) {
-				this->options = options;
+			FixedPointOptions & getOptions () {
+				return options;
 			}
 			
 			void setIterator( std::unique_ptr<Iterator> && iter){iterator=std::move(iter);}
@@ -45,6 +45,7 @@
 			Vector compute ( Vector const & x0 ) {if ( history.empty() ) history.emplace_back ( x0 ); return compute(); }
 			
 			void reset() { 
+				iterator->reset();
 				history.clear();
 				history.shrink_to_fit();
 				iteration = 0;				

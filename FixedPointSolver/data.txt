@@ -1,3 +1,15 @@
-lambda =0.5;
-MMMfile =cavity15.mtx;
-MMVfile =cavity15_rhs1.mtx;
+[FPI_1_param]
+
+lambda = 0.5
+x00 = 5
+x01 = 7
+maxIter = 50
+memory = 5
+mixingParameter = 1
+AndersonMemory = 5
+tolerance = 1.e-10
+
+[files]
+
+MMMfile = cavity15.mtx        ### file to read the matrix
+MMVfile = cavity15_rhs1.mtx   ### file to read the vector

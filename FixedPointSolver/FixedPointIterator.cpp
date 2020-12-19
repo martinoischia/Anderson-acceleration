@@ -17,19 +17,19 @@ namespace FixedPoint {
 			if (history.size() > options.memory) history.pop_front();
 		}		
 		
-		return history.front();				
+		return history.back();
 	}
 	
 	void FixedPointIterator::printResult (std::ostream & OS) const
 	{
-		auto & current = history.front();
+		auto & current = history.back();
 		auto & previous = history[history.size()-2];
 		auto distance = Traits::distance ( current , previous ) ;
 		auto residual = Traits::distance ((iterator->getIterationFunction())(current), current );
 		bool converged = (distance < options.tolerance) ;
 		
 		OS.precision(10);
-		OS <<"The fixed point iteration ";
+		OS <<"\n The fixed point iteration ";
 		if (converged)
 		{
 			OS<<" converged ";
@@ -41,7 +41,7 @@ namespace FixedPoint {
 		}
 		OS <<" in "<< iteration<<" Iterations. Last computed value:"<<std::endl;
 		Traits::print(current, OS);
-		OS << "Residual has value " << residual << std::endl;
+		OS << "Residual has value " << residual << std::endl <<std::endl;
 	}
 	
 }							

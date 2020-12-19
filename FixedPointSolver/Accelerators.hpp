@@ -4,6 +4,7 @@
 	#include <deque>
 	#include <cassert>
 	#include "FixedPointTraits.hpp"
+	#include <algorithm>
 	
 	#ifndef Traits
 		#define Traits SparseTraits
@@ -17,10 +18,9 @@
 			template <class IterationFun>
 			Iterator(IterationFun&& IF , std::size_t dim): phi(std::forward<IterationFun>(IF)), dimension (dim) {}
 			
-			virtual Vector operator()(const std::deque < Vector > & past){
-				assert (!past.empty());
-				return phi( past.back() );
-			}
+			virtual inline Vector operator()(const std::deque < Vector > & past);
+			
+			virtual void reset(){}
 			
 			virtual ~Iterator(){};
 			
@@ -57,38 +57,59 @@
 			
 			template <class IterationFun>
 			ASecantAccelerator(IterationFun&& IF, std::size_t dim):
-				Iterator(std::forward<IterationFun>(IF), dim), deltaXNew(dim), deltaXOld(dim), phiOld(dim) {}
+			Iterator(std::forward<IterationFun>(IF), dim), deltaXOld(dim), phiOld(dim), firstTime(true) {}
 			
 			Vector operator()(const std::deque < Vector > &) override;
 			
-			void reset()
-			{
-				firstTime=true;
+			void reset() override {firstTime=true;}
+			
+			private:
+			
+			Vector deltaXOld;
+			Vector phiOld;
+			
+			bool firstTime;
+		};
+		
+		class AndersonAccelerator : public Iterator
+		{
+			public:
+			
+			template <class IterationFun>
+			AndersonAccelerator(IterationFun&& IF, std::size_t dim, double p =1, std::size_t m = 10): 
+			Iterator(std::forward<IterationFun>(IF), dim ), mixingParameter(p), memory(std::min (m, dim)) {}
+			
+			Vector operator()(const std::deque < Vector > &) override;
+			
+			void reset() {
+				evaluated = false ; 
+				evaluation_history.clear();
+				evaluation_history.shrink_to_fit();
 			}
 			
 			private:
 			
-			Vector deltaXNew;
-			Vector deltaXOld;
-			Vector phiOld;
-			bool firstTime=true;
+			double mixingParameter;
+			
+			std::size_t memory;	
+			
+			std::deque < Vector > evaluation_history;
+			
+			bool evaluated = false ;
+			
+			void evaluate (const std::deque < Vector > & past) {
+				evaluation_history.resize( std::min (past.size(), memory) );
+				std::transform( past.cbegin() , past.cend() , evaluation_history.begin() , phi ) ;
+			}
+			
 		};
 		
-		class GeneralAndersonAccelerator : public Iterator
+		
+		Traits::Vector Iterator::operator()(const std::deque < Vector > & past)
 		{
-			public:
-			template <class IterationFun>
-			GeneralAndersonAccelerator(IterationFun&& IF, std::size_t dim, int memory = 5): 
-			Iterator(std::forward<IterationFun>(IF), dim ), m(memory) {}
-			
-			Vector operator()(const std::deque < Vector > &) override;
-			
-			private:
-			
-			int m;
-			
-			
-		};
+			assert (!past.empty());
+			return phi( past.back() );
+		}
 		
 	}
 #endif /* SRC_NONLINSYSSOLVER_ACCELERATORS_HPP_ */					

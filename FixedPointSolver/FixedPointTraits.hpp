@@ -7,7 +7,7 @@
 	namespace FixedPoint
 	{
 		class VectorTraits // it should be extended, for now I have just made the main
-		//compliant with the Eigen related traits
+		//compliant with the Eigen Sparse traits
 		{
 			public:
 			using Vector = std::vector <double>;
@@ -54,6 +54,7 @@
 			using Vector = Eigen::Matrix<double,Eigen::Dynamic,1>;
 			using IterationFunction= std::function <Vector (Vector const &)>;			
 			using Matrix = Eigen::SparseMatrix<double, Eigen::RowMajor>;
+			using AndersonMatrix = Eigen::Matrix<double,Eigen::Dynamic, Eigen::Dynamic>;
 			
 			static double distance (Vector const & current, Vector const & previous)
 			{
