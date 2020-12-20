@@ -1,5 +1,8 @@
-#ifndef SRC_NONLINSYSSOLVER_ACCELERATORS_HPP_
-	#define SRC_NONLINSYSSOLVER_ACCELERATORS_HPP_
+//! @file Accelerators.hpp
+//! @brief Header file for the polymorphic family of iterators
+
+#ifndef SRC_ACCELERATORS_HPP_
+	#define SRC_ACCELERATORS_HPP_
 	
 	#include <deque>
 	#include <cassert>
@@ -7,17 +10,28 @@
 	#include <algorithm>
 	
 	#ifndef Traits
+		//! All the classes in this project derive from Traits to have uniform types.
 		#define Traits SparseTraits
 	#endif
 	namespace FixedPoint
-	{		
+	{
+		//! @brief A function object producing iterations.
+		
+		//! This class is the parent class for the subsequent classes: what it does
+		//! is providing, through the call operator, the next value of a (hopefully converging) sequence, based on an
+		//! iteration function *phi* and previous iterations data.
 		class Iterator : public Traits
 		{
 			public:
 			
+			//! The constructor
 			template <class IterationFun>
-			Iterator(IterationFun&& IF , std::size_t dim): phi(std::forward<IterationFun>(IF)), dimension (dim) {}
+			Iterator(IterationFun && IF , std::size_t dim): phi(std::forward<IterationFun>(IF)), dimension (dim) {}
 			
+			//! Function call operator, is defined at the end of this file
+			
+			//! @param past the sequence of past iterates used to compute a new value
+			//! @return the computed value
 			virtual inline Vector operator()(const std::deque < Vector > & past);
 			
 			virtual void reset(){}
@@ -32,6 +46,7 @@
 			
 			protected:
 			IterationFunction phi;
+			//! Fixed-point problems go from \f$\mathbb{R}^{dim}\f$ to \f$\mathbb{R}^{dim}\f$
 			std::size_t dimension;
 		};
 		
@@ -44,10 +59,6 @@
 			*
 			* V. Eyert, A Comparative Study on Methods for Convergence Acceleration of Iterative Vector Sequences, Journal of Computational Physics 124 (1996) 271–285.
 			* H. Fang, Y. Saad, Two classes of multisecant methods for nonlinear accel- eration, Numerical Linear Algebra with Applications 16 (2009) 197–221.
-			*
-			* \tparam IteratorFunction. The iterator function. Note that at this level the iterator function
-			* is used only as a trait to extract the type used for the arguments. No other requirements are made
-			*
 		*/
 		
 		
@@ -55,6 +66,8 @@
 		{
 			public:
 			
+			//! The constructor just forwards arguments to the parent class constructor and
+			//! allocates memory for the vectors.
 			template <class IterationFun>
 			ASecantAccelerator(IterationFun&& IF, std::size_t dim):
 			Iterator(std::forward<IterationFun>(IF), dim), deltaXOld(dim), phiOld(dim), firstTime(true) {}
@@ -71,6 +84,9 @@
 			bool firstTime;
 		};
 		
+		//! Anderson Accelerator
+		
+		//! Anderson, Donald, Iterative Procedures for Nonlinear Integral Equations J. ACM 12 (1965) 547-560, doi 10.1145/321296.321305
 		class AndersonAccelerator : public Iterator
 		{
 			public:
@@ -88,15 +104,19 @@
 			}
 			
 			private:
-			
+			//! A sort of relaxation parameter.
 			double mixingParameter;
 			
+			//! How many past iterates are considered at each step.
 			std::size_t memory;	
 			
+			//! Contains the values of the iterator function evaluated in the past iterations.
 			std::deque < Vector > evaluation_history;
 			
 			bool evaluated = false ;
 			
+			//! Fills evaluation_history
+			//! @param past the past iteration values
 			void evaluate (const std::deque < Vector > & past) {
 				evaluation_history.resize( std::min (past.size(), memory) );
 				std::transform( past.cbegin() , past.cend() , evaluation_history.begin() , phi ) ;
@@ -104,7 +124,7 @@
 			
 		};
 		
-		
+		//! Here only the last value of the past container is used
 		Traits::Vector Iterator::operator()(const std::deque < Vector > & past)
 		{
 			assert (!past.empty());
@@ -112,4 +132,4 @@
 		}
 		
 	}
-#endif /* SRC_NONLINSYSSOLVER_ACCELERATORS_HPP_ */					
+#endif /* SRC_ACCELERATORS_HPP_ */					

@@ -1,3 +1,4 @@
+# Useful variables
 SRCS=$(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
 HEADERS=$(wildcard *.hpp)
@@ -6,31 +7,32 @@ EXEC=$(exe_sources:.cpp=)
 EIGEN_DIR=$(mkEigenInc)
 STANDARD=c++17
 OPTFLAGS=-g
-DEFINE=-DTraits=VectorTraits
+# DEFINE=-DTraits=VectorTraits
 #==========================
 
 
 LINK.o = $(CXX) $(LDFLAGS)
-CPPFLAGS=-I. -I../Include -I$(EIGEN_DIR) 
+CPPFLAGS=-I. -I../Include -I$(EIGEN_DIR) $(DEFINE)
 CXXFLAGS=-std=$(STANDARD) $(OPTFLAGS)
 LDFLAGS=-std=$(STANDARD) $(OPTFLAGS)
 LDLIBS=
 
 #==========================
+# Targets
 
-.phony= all clean distclean doc
+.phony= all clean distclean doc run makedep
 
 .DEFAULT_GOAL = all
 
 all: makedep $(EXEC)
 
 clean:
-	$(RM) -f $(EXEC) $(OBJS) make.dep
+	$(RM) -f $(EXEC) $(OBJS) make.dep doxygen_sqlite3.db; rm -f -r html latex
 
 #distclean: clean
 
-# doc:
-	# doxygen $(DOXYFILE)
+doc:
+	doxygen Doxyfile
 
 $(EXEC): $(OBJS)
 

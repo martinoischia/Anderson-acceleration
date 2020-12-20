@@ -1,3 +1,8 @@
+//! @file main_FixedPoint.cpp
+//! @brief The main file
+//!
+//! It contains a simple fixed-point problem that is solved with different acceleration methods.
+//! Many parameters can be read from input through the GetPot utility.
 #include "FixedPointIterator.hpp"
 #include "GetPot"
 #include "MM_readers3.3.hpp"
@@ -6,7 +11,7 @@ int main(int argc, char** argv)
 {
 	using namespace FixedPoint;
 	GetPot get_filename (argc, argv);
-	std::string filename = get_filename ("filename", "data.txt");
+	std::string filename = get_filename ("filename", "data.input");
 	
 	GetPot get_problem_data (filename.c_str ());
 	
@@ -31,7 +36,7 @@ int main(int argc, char** argv)
 	
 	// a function from R^3 to R^3...
 	std::size_t dimension = 3;
-	auto phi_1 = [lambda, dimension] (Vector const & x){
+	auto phi_1 = [dimension] (Vector const & x){
 		Vector vec(dimension);
 		vec.coeffRef(0) = -1./81.*std::cos( x.coeff(0) ) + 1./9.* x.coeff(1)*x.coeff(1) + 1./3. * std::sin(x.coeff(2));
 		vec.coeffRef(1) = 1./3.*std::sin( x.coeff(0) ) +1./3.*std::cos(x.coeff(2));
@@ -53,7 +58,7 @@ int main(int argc, char** argv)
 	FPI_1.getOptions().tolerance = get_problem_data ("FPI_1_param/tolerance", 0.01);
 	
 	//Solving
-	std::cout<<"\n*** WITH BASIC METHOD:\n";
+	std::cout<<"\n*** WITH BASIC METHOD:\n\n";
 	FPI_1.compute(startingPoint_1);
 	FPI_1.printHistory();
 	FPI_1.printResult();
@@ -64,7 +69,7 @@ int main(int argc, char** argv)
 	
 	//Solving
 	
-	std::cout<<"\n*** WITH SECANT ACCELERATION:\n";
+	std::cout<<"\n*** WITH SECANT ACCELERATION:\n\n";
 	FPI_1.compute(startingPoint_1);
 	FPI_1.printHistory();
 	FPI_1.printResult();
@@ -76,7 +81,7 @@ int main(int argc, char** argv)
 	FPI_1.setIterator( std::make_unique <AndersonAccelerator> (std::move (FPI_1.getIterator().getIterationFunction()), dimension, mixingParameter, memory) );
 	
 	//Solving
-	std::cout<<"\n*** WITH ANDERSON ACCELERATION:\n";
+	std::cout<<"\n*** WITH ANDERSON ACCELERATION:\n\n";
 	FPI_1.compute(startingPoint_1);
 	FPI_1.printHistory();
 	FPI_1.printResult();

@@ -1,3 +1,5 @@
+//! @file FixedPointIterator.cpp
+
 #include "FixedPointIterator.hpp"
 
 namespace FixedPoint {
@@ -29,7 +31,7 @@ namespace FixedPoint {
 		bool converged = (distance < options.tolerance) ;
 		
 		OS.precision(10);
-		OS <<"\n The fixed point iteration ";
+		OS <<"\n The fixed-point iteration ";
 		if (converged)
 		{
 			OS<<" converged ";
@@ -39,9 +41,9 @@ namespace FixedPoint {
 			OS << "has not converged ";
 			
 		}
-		OS <<" in "<< iteration<<" Iterations. Last computed value:"<<std::endl;
-		Traits::print(current, OS);
-		OS << "Residual has value " << residual << std::endl <<std::endl;
+		OS <<" in "<< iteration<<" Iterations."<<std::endl;
+		OS << "Residual has value " << residual << std::endl;
+		OS << "___________________________________________________"<< std::endl;
 	}
 	
 }							

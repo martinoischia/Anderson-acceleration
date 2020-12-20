@@ -1,13 +1,22 @@
-#ifndef NONLINSYSSOLVER_FIXEDPOINTTRAITS_HPP_
-	#define NONLINSYSSOLVER_FIXEDPOINTTRAITS_HPP_
+//! @file FixedPointTraits.hpp
+//! @brief Defines types used throughout the project.
+//!
+//! Here are defined the types that are used in the generic implementation.
+//! Also some utilities related to this types are provided. 
+//! Only the types defined in SparseTraits are actually supported for now.
+
+#ifndef _FIXEDPOINTTRAITS_HPP_
+	#define _FIXEDPOINTTRAITS_HPP_
 	#include <memory>
 	#include <vector>
 	#include <Eigen/Core>
 	#include <Eigen/SparseCore>
+	
+	//! The namespace that contains everything related to my project.
+	
 	namespace FixedPoint
 	{
-		class VectorTraits // it should be extended, for now I have just made the main
-		//compliant with the Eigen Sparse traits
+		class VectorTraits
 		{
 			public:
 			using Vector = std::vector <double>;
@@ -49,11 +58,15 @@
 			
 		};
 		
+		//! The project is meant to be applied to large sparse matrices.
+		
 		struct SparseTraits
 		{
+			//!Vectors are usually dense.
 			using Vector = Eigen::Matrix<double,Eigen::Dynamic,1>;
 			using IterationFunction= std::function <Vector (Vector const &)>;			
 			using Matrix = Eigen::SparseMatrix<double, Eigen::RowMajor>;
+			//!The Matrix used for the computations when the Anderson Accelerator is used.
 			using AndersonMatrix = Eigen::Matrix<double,Eigen::Dynamic, Eigen::Dynamic>;
 			
 			static double distance (Vector const & current, Vector const & previous)
@@ -72,12 +85,12 @@
 			
 			// static std::ostream & print (const Vector& v, std::ostream & OS)
 			// {
-				// for (Vector::InnerIterator it(v); it; ++it)
-				// {
-					// OS << it.index() <<" ";
-					// OS << it.value() <<std::endl;
-					// return OS;
-				// }
+			// for (Vector::InnerIterator it(v); it; ++it)
+			// {
+			// OS << it.index() <<" ";
+			// OS << it.value() <<std::endl;
+			// return OS;
+			// }
 			// }
 			
 		};
@@ -87,4 +100,4 @@
 	
 	
 	
-#endif /* NONLINSYSSOLVER_FIXEDPOINTTRAITS_HPP_ */
+#endif /* _FIXEDPOINTTRAITS_HPP_ */

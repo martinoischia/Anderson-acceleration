@@ -1,3 +1,5 @@
+//! @file Accelerators.cpp
+//! @brief Implementation of the acceleration algorithms
 #include "Accelerators.hpp"
 #include <Eigen/QR>
 
@@ -87,7 +89,7 @@ namespace FixedPoint
 				}		
 			}
 			
-			//Calculating the solution
+			//Calculating the solution using QR decomposition for solving least square problem
 			
 			Vector f = evaluation_history.back() - past.back() ;
 			Vector solution ;
