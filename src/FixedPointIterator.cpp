@@ -43,7 +43,7 @@ namespace FixedPoint {
 		}
 		OS <<" in "<< iteration<<" Iterations."<<std::endl;
 		OS << "Residual has value " << residual << std::endl;
-		OS << "___________________________________________________"<< std::endl;
+		OS << "________________________________________________________"<< std::endl;
 	}
 	
 }							

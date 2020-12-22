@@ -17,5 +17,13 @@ tolerance = 1.e-10
 
 [files]
 
-MMMfile = cavity15.mtx        ### file to read the matrix
-MMVfile = cavity15_rhs1.mtx   ### file to read the vector
+MMMfile = ./matrixes/sherman2.mtx        ### file to read the matrix
+MMVfile = ./matrixes/sherman2.mtx   ### file to read the vector
+
+[FPI_2_param]
+
+maxIter = 5000
+memory = 10
+mixingParameter = 1
+AndersonMemory = 5
+tolerance = 1.e-10

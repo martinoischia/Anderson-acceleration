@@ -1,13 +1,20 @@
 # Useful variables
 SRCS=$(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
+OBJS1 = $(filter-out main_lin%.o, $(OBJS))
+OBJS2 = $(filter-out main_sim%.o, $(OBJS))
 HEADERS=$(wildcard *.hpp)
 exe_sources=$(filter main%.cpp,$(SRCS))
 EXEC=$(exe_sources:.cpp=)
+exec1=main_simple_problem
+exec2=main_linear_problem
 EIGEN_DIR=$(mkEigenInc)
 STANDARD=c++17
-OPTFLAGS=-g
+OPTFLAGS=-O3
+DEFINE=-DNDEBUG
+# OPTFLAGS=-g
 # DEFINE=-DTraits=VectorTraits
+# DEFINE=EigenSolver
 #==========================
 
 
@@ -24,7 +31,7 @@ LDLIBS=
 
 .DEFAULT_GOAL = all
 
-all: makedep $(EXEC)
+all: makedep $(exec1) $(exec2)
 
 clean:
 	$(RM) -f $(EXEC) $(OBJS) make.dep doxygen_sqlite3.db; rm -f -r html latex
@@ -34,12 +41,12 @@ clean:
 doc:
 	doxygen Doxyfile
 
-$(EXEC): $(OBJS)
+$(exec1): $(OBJS1)
 
-$(OBJS): $(SRCS)
+$(exec2): $(OBJS2)
 
 run:
-	./$(EXEC)
+	./main_linear_problem
 
 makedep: $(SRCS)
 	$(RM) make.dep

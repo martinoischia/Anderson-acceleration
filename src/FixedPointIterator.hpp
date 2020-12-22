@@ -5,7 +5,7 @@
 
 #ifndef SRC_FIXEDPOINTITERATOR_HPP_
 	#define SRC_FIXEDPOINTITERATOR_HPP_
-
+	
 	#include <iostream>
 	#include "Accelerators.hpp"
 	#include <limits>
@@ -30,7 +30,7 @@
 			//TOFIX
 			// This code has lead me to an Internal Compiler Error. Making the class default constructable seems good.
 			// FixedPointIterator(std::unique_ptr <Iterator> && iter, const FixedPointOptions& opt=FixedPointOptions{}):
-				// iterator(std::move(iter)), options{opt}, iteration{0}, history{} {}
+			// iterator(std::move(iter)), options{opt}, iteration{0}, history{} {}
 			
 			//! Default constructor
 			FixedPointIterator():iterator(nullptr), options{FixedPointOptions{}}, iteration{0}, history{} {}
@@ -63,7 +63,7 @@
 				history.clear();
 				history.shrink_to_fit();
 				iteration = 0;				
-				}
+			}
 			
 			void printResult ( std::ostream & OS = std::cout) const;
 			
@@ -71,6 +71,13 @@
 				unsigned int m = std::min (history.size(), static_cast<long unsigned int>(options.print_memory));
 				std::cout<< "Last " << m << " values:\n";
 				for (int i = 0 ; i < m ; ++i) Traits::print ( history [i] , OS) ;
+			}
+			
+			//! probably to be redesigned but useful
+			void printResidualHistory ( std::ostream & OS = std::cout) const {
+				unsigned int m = std::min (history.size(), static_cast<long unsigned int>(options.print_memory));
+				std::cout<< "Last " << m << " residual norms:\n";
+				for (int i = 0 ; i < m ; ++i) OS << ((iterator->getIterationFunction())( history [i]) - history [i]).norm() << std::endl ;
 			}
 			
 			const std::deque < Vector > & getHistory () const { return history ;}

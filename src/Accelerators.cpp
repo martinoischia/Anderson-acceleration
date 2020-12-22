@@ -67,7 +67,7 @@ namespace FixedPoint
 			int m_k = evaluation_history.size()-1;
 			
 			//build "delta x" matrix
-			
+
 			AndersonMatrix X ( dimension, m_k );
 			for (int j = 0; j < m_k; ++j )
 			{
