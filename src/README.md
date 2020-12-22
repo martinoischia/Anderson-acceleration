@@ -7,6 +7,6 @@ To compile:
 - if not, you have to specify the location of the Eigen headers manually in the
 apposite variable in the *Makefile* in this directory;
 
-run *make*, then *make run* to run the example.
+run *make*, then *make run* to run the examples.
 
 Other useful targets: *make clean* and *make doc*

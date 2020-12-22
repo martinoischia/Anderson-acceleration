@@ -17,8 +17,8 @@ tolerance = 1.e-10
 
 [files]
 
-MMMfile = ./matrixes/sherman2.mtx        ### file to read the matrix
-MMVfile = ./matrixes/sherman2.mtx   ### file to read the vector
+MMMfile = ./MM\ matrixes/sherman2.mtx        ### file to read the matrix
+MMVfile = ./MM\ matrixes/sherman2.mtx   ### file to read the vector
 
 [FPI_2_param]
 

@@ -46,7 +46,7 @@ $(exec1): $(OBJS1)
 $(exec2): $(OBJS2)
 
 run:
-	./main_linear_problem
+	./$(exec1); ./$(exec2)
 
 makedep: $(SRCS)
 	$(RM) make.dep
