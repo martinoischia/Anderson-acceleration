@@ -13,6 +13,7 @@
 #include "Timing.hpp"
 int main(int argc, char** argv)
 {
+	std::cout << "\n********************EXAMPLE 2****************************\n\n\n\n";
 	using namespace FixedPoint;
 	GetPot get_filename (argc, argv);
 	std::string filename = get_filename ("filename", "data.input");
@@ -30,12 +31,13 @@ int main(int argc, char** argv)
 	Matrix MMM = Eigen::read_MM_Matrix <Matrix> ( matrix_filename );
 	Vector MMV = Eigen::read_MM_Vector <Vector> ( vector_filename );
 	t.write( "reading");
-	std::cout << "\n***COMPUTING PRECONDITIONER" <<std::endl;
 	std::size_t dimension = MMV.size() ;
+	std::cout << "\nProblem dimension:" << dimension << std::endl;
+	std::cout << "\nMatrix Frobenius norm: " << MMM.norm() << std::endl;
+	std::cout << "\n***COMPUTING PRECONDITIONER" <<std::endl;
 	Eigen::BiCGSTAB < Matrix , Eigen::IncompleteLUT <double >> eigenSolver(MMM);
 	eigenSolver.compute(MMM);
 	t.write( "computing");
-	
 	
 	#ifdef EigenSolver
 		//Solving
@@ -63,7 +65,8 @@ int main(int argc, char** argv)
 	std::cout<<"\n*** WITH RICHARDSON METHOD, USING EIGEN PRECONDITIONER:\n"; 
 	//The iterator object
 	FixedPointIterator FPI_2;
-	FPI_2.setIterator( std::make_unique <Iterator>(SimpleRichardson < decltype(eigenSolver) >(MMM, eigenSolver.preconditioner(), MMV, 0.2), dimension)); 
+	double relaxationParameter = get_problem_data ("FPI_2_param/relaxationParameter", 1.);
+	FPI_2.setIterator( std::make_unique <Iterator>(SimpleRichardson < decltype(eigenSolver) >(MMM, eigenSolver.preconditioner(), MMV, relaxationParameter), dimension)); 
 	FPI_2.getOptions().maxIter = get_problem_data ("FPI_2_param/maxIter", 10000);
 	FPI_2.getOptions().memory = get_problem_data ("FPI_2_param/memory", 8);
 	FPI_2.getOptions().tolerance = get_problem_data ("FPI_2_param/tolerance", 1e-7);
@@ -75,7 +78,7 @@ int main(int argc, char** argv)
 	
 	std::cout<<"\n*** APPLYING SECANT ACCELERATION:\n\n";
 	FPI_2.reset();
-	FPI_2.setIterator( std::make_unique <ASecantAccelerator>(SimpleRichardson < decltype(eigenSolver) >(MMM, eigenSolver.preconditioner(), MMV, 0.5), dimension)); 
+	FPI_2.setIterator( std::make_unique <ASecantAccelerator>(SimpleRichardson < decltype(eigenSolver) >(MMM, eigenSolver.preconditioner(), MMV, relaxationParameter), dimension)); 
 	Timing t3;
 	FPI_2.compute();
 	t3.write("secant");
@@ -86,7 +89,7 @@ int main(int argc, char** argv)
 	FPI_2.reset();
 	double mixingParameter = get_problem_data ("FPI_2_param/mixingParameter", 1.);
 	std::size_t memory = get_problem_data ("FPI_2_param/AndersonMemory", 5);
-	FPI_2.setIterator( std::make_unique <AndersonAccelerator>(SimpleRichardson < decltype(eigenSolver) >(MMM, eigenSolver.preconditioner(), MMV), dimension)); 
+	FPI_2.setIterator( std::make_unique <AndersonAccelerator>(SimpleRichardson < decltype(eigenSolver) >(MMM, eigenSolver.preconditioner(), MMV, relaxationParameter), dimension, mixingParameter, memory)); 
 	Timing t4;
 	FPI_2.compute();
 	t4.write( "Anderson");

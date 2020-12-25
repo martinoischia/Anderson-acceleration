@@ -14,7 +14,7 @@ OPTFLAGS=-O3
 DEFINE=-DNDEBUG
 # OPTFLAGS=-g
 # DEFINE=-DTraits=VectorTraits
-# DEFINE=EigenSolver
+# DEFINE=-DEigenSolver
 #==========================
 
 

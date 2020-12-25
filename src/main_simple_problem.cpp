@@ -8,6 +8,7 @@
 
 int main(int argc, char** argv)
 {
+	std::cout << "\n********************EXAMPLE 1****************************\n\n";	
 	using namespace FixedPoint;
 	GetPot get_filename (argc, argv);
 	std::string filename = get_filename ("filename", "data.input");
@@ -36,11 +37,11 @@ int main(int argc, char** argv)
 	// a function from R^3 to R^3...
 	std::size_t dimension = 3;
 	auto phi_1 = [dimension] (Vector const & x){
-		Vector vec(dimension);
-		vec.coeffRef(0) = -1./81.*std::cos( x.coeff(0) ) + 1./9.* x.coeff(1)*x.coeff(1) + 1./3. * std::sin(x.coeff(2));
-		vec.coeffRef(1) = 1./3.*std::sin( x.coeff(0) ) +1./3.*std::cos(x.coeff(2));
-		vec.coeffRef(2) = -1./9.*std::cos( x.coeff(0) ) + 1./3.* x.coeff(1) + 1./6. * std::sin(x.coeff(2));
-		return vec; 
+	Vector vec(dimension);
+	vec.coeffRef(0) = -1./81.*std::cos( x.coeff(0) ) + 1./9.* x.coeff(1)*x.coeff(1) + 1./3. * std::sin(x.coeff(2));
+	vec.coeffRef(1) = 1./3.*std::sin( x.coeff(0) ) +1./3.*std::cos(x.coeff(2));
+	vec.coeffRef(2) = -1./9.*std::cos( x.coeff(0) ) + 1./3.* x.coeff(1) + 1./6. * std::sin(x.coeff(2));
+	return vec; 
 	};
 	// ... and a starting point
 	Vector startingPoint_1(dimension);
@@ -84,7 +85,8 @@ int main(int argc, char** argv)
 	FPI_1.compute(startingPoint_1);
 	FPI_1.printHistory();
 	FPI_1.printResult();	
-}
-
-
-
+	}
+	
+	
+	
+		

@@ -77,7 +77,7 @@
 			void printResidualHistory ( std::ostream & OS = std::cout) const {
 				unsigned int m = std::min (history.size(), static_cast<long unsigned int>(options.print_memory));
 				std::cout<< "Last " << m << " residual norms:\n";
-				for (int i = 0 ; i < m ; ++i) OS << ((iterator->getIterationFunction())( history [i]) - history [i]).norm() << std::endl ;
+				for (int i = history.size()-m ; i < history.size() ; ++i) OS << ((iterator->getIterationFunction())( history [i]) - history [i]).norm() << std::endl ;
 			}
 			
 			const std::deque < Vector > & getHistory () const { return history ;}

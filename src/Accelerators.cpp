@@ -47,27 +47,26 @@ namespace FixedPoint
 	Traits::Vector  AndersonAccelerator::operator()(const std::deque < Vector > & past){
 		
 		assert (!past.empty());
-		if ( past.size() == 1 )
-		{ 
-			evaluation_history.emplace_back( phi (past[0]) );
-			Vector & solution = evaluation_history.back();
-			evaluation_history.emplace_back( phi (solution) );
+		if ( !evaluated ) 
+		{
+			evaluate ( past );
 			evaluated = true;
+		}
+		
+		if ( evaluation_history.size() == 1 ) // evaluation_history size is kept controlled by the (Anderson) memory parameter, unlike past.size()
+		{
+			Vector solution = (1-mixingParameter) * past [0] +  mixingParameter * evaluation_history.back(); // if memory == 1 it's called simple mixing
+			evaluation_history.emplace_back( phi (solution) );
+			if ( memory== 1) evaluation_history.pop_front();			
 			return ( solution ) ;
 		}
 		
 		else
-		{
-			if ( !evaluated ) 
-			{
-				evaluate ( past );
-				evaluated = true;
-			}
-			
+		{	
 			int m_k = evaluation_history.size()-1;
 			
 			//build "delta x" matrix
-
+			
 			AndersonMatrix X ( dimension, m_k );
 			for (int j = 0; j < m_k; ++j )
 			{
