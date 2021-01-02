@@ -5,4 +5,4 @@ latex: report.tex
 	pdflatex report.tex> /dev/null;
 
 clean:
-	$(RM) *.aux *.pdf *run *.blg *.toc *.xml *blx.bib *.bbl *.log
+	$(RM) *.aux *run *.blg *.toc *.xml *blx.bib *.bbl *.log *.out

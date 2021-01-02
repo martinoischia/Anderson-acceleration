@@ -66,8 +66,6 @@
 			using Vector = Eigen::Matrix<double,Eigen::Dynamic,1>;
 			using IterationFunction= std::function <Vector (Vector const &)>;			
 			using Matrix = Eigen::SparseMatrix<double, Eigen::RowMajor>;
-			//!The Matrix used for the computations when the Anderson Accelerator is used.
-			using AndersonMatrix = Eigen::Matrix<double,Eigen::Dynamic, Eigen::Dynamic>;
 			
 			static double distance (Vector const & current, Vector const & previous)
 			{

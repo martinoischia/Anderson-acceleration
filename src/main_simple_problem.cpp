@@ -45,10 +45,9 @@ int main(int argc, char** argv)
 	};
 	// ... and a starting point
 	Vector startingPoint_1(dimension);
-	startingPoint_1.coeffRef(2) = 1.;
-	
 	startingPoint_1.coeffRef(0) = get_problem_data ("FPI_1_param/x00", 5.);
 	startingPoint_1.coeffRef(1) = get_problem_data ("FPI_1_param/x01", 7.);
+	startingPoint_1.coeffRef(2) = 1.;
 	
 	//The iterator object
 	FixedPointIterator FPI_1;

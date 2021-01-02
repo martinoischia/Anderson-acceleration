@@ -47,63 +47,28 @@ namespace FixedPoint
 	Traits::Vector  AndersonAccelerator::operator()(const std::deque < Vector > & past){
 		
 		assert (!past.empty());
-		if ( !evaluated ) 
+		Vector f = phi(past.back()) - past.back() ;
+		
+		
+		if ( memory == 1 ) //this case is called simple mixing
 		{
-			evaluate ( past );
-			evaluated = true;
+			return (past.back() +  mixingParameter * f);
 		}
 		
-		if ( evaluation_history.size() == 1 ) // evaluation_history size is kept controlled by the (Anderson) memory parameter, unlike past.size()
+		if ( past.size() == 1 )
 		{
-			Vector solution = (1-mixingParameter) * past [0] +  mixingParameter * evaluation_history.back(); // if memory == 1 it's called simple mixing
-			evaluation_history.emplace_back( phi (solution) );
-			if ( memory== 1) evaluation_history.pop_front();			
-			return ( solution ) ;
+			fOld = f;
+			return (past.back() +  mixingParameter * f);
 		}
 		
 		else
-		{	
-			int m_k = evaluation_history.size()-1;
-			
-			//build "delta x" matrix
-			
-			AndersonMatrix X ( dimension, m_k );
-			for (int j = 0; j < m_k; ++j )
-			{
-				for (int i = 0; i < dimension; ++i )
-				{
-					X (i,j) = past [ past.size()-m_k+j ](i)- past [ past.size()-m_k+j-1 ](i) ;
-				}		
-			}
-			
-			//Build "delta residual" matrix
-			AndersonMatrix F ( dimension, m_k );
-			for (int j = 0; j < m_k; ++j )
-			{
-				for (int i = 0; i < dimension; ++i )
-				{
-					F (i,j) = 
-					evaluation_history [ evaluation_history.size()-m_k+j ](i)- past [ past.size()-m_k+j ](i) -
-					evaluation_history [ evaluation_history.size()-m_k+j-1 ](i) + past [ past.size()-m_k+j-1 ](i);
-				}		
-			}
-			
+		{
+			X.push_back ( past[past.size()-1] - past[past.size()-2]) ;
+			F.push_back ( f - fOld);
+			fOld = f;
 			//Calculating the solution using QR decomposition for solving least square problem
-			
-			Vector f = evaluation_history.back() - past.back() ;
-			Vector solution ;
-			solution = past.back() + mixingParameter*f - ( X + mixingParameter*F)*F.colPivHouseholderQr().solve(f) ;
-			
-			evaluation_history.emplace_back( phi ( solution ));
-			if (evaluation_history.size() > memory) 
-			evaluation_history.pop_front();
-			
-			return solution;
+			return (past.back() + mixingParameter*f - ( X.getMatrix() + mixingParameter*F.getMatrix())*F.getMatrix().colPivHouseholderQr().solve(f)) ;
 		}
 	}
 	
-}	
-
-
-
-
+}

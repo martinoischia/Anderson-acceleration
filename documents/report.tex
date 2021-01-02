@@ -1,39 +1,99 @@
 \documentclass[12pt]{article}
-\usepackage[utf8]{inputenc}
+	\usepackage[utf8]{inputenc}
+	
+	\usepackage{url}
+	\usepackage{lipsum}
+	\usepackage{graphicx}
+	\usepackage{color}
+	\usepackage{amsmath}
+	\usepackage{amssymb}
+	\usepackage{accents}
+	\usepackage{tikz}
+	\usepackage[backend=bibtex,style=numeric]{biblatex}
+	\usepackage{algpseudocode}
+	\usepackage{hyperref}
+	\addbibresource{bibliografia.bib}
+	\DeclareMathOperator*{\argmin}{arg\,min}
+	\title{
+		\vspace{-30mm}\begin{figure}[h]
+			\centering
+			\includegraphics[width=2in]{logo_polimi.png}
+			% \label{escudo}
+		\end{figure}Anderson Acceleration for Fixed-Point Iterations}
+		\author{Martino Ischia\\ \footnotesize{Supervisor: Prof. Formaggia}}
+		\date{January 2021}
+		
+		
+		\begin{document}
+		\maketitle
+		\abstract
+			The goal of this project is twofold.\\
+			Firstly, develop a C++ interface for accelerating a converging sequence of vectors.
+			It should be at the same time open for extensions, in case the user wants to implement its own algorithm,
+			and efficient in the solution of large systems.\\
+			Secondly, making use of said interface to implement Anderson acceleration strategy and apply it on ...\\
+			
+			The reader not interested in the C++ implementation, exposed in section \ref{sec:C++},
+			can safely skip it.
+		\endabstract
+		\tableofcontents
+		
+		\section{Introduction}
+			A fixed-point problem consists in finding the point (a vector in $\mathbb{R}^n$) that satisfies the
+			following:
+			$$ x = g(x)$$
+			where g is a function from $\mathbb{R}^n$ to $\mathbb{R}^n$.\\
+			It is clearly equivalent to the problem of finding the roots of a generic function,
+			that is often tackled by employing Newton-Raphson iterative algorithm.
+			In many practical problems, though, the cost of computing the Jacobian of a function
+			is not practical, not to mention that there might be problems in starting the
+			iterations from a proper guess.\\
+			Considering the fixed-point form and solving through fixed-point iterations has also some limitations, the main one being
+			a slow convergence: in fact most of the times the convergence is linear.\\
+			Several strategies have been described in the literature to improve the speed
+			of convergence of a vector sequence: we could refer to them as acceleration methods.
+			This project focuses on one of them,
+			proposed by \citeauthor{Anderson} \cite{Anderson} in \citeyear{Anderson}.
+			
+			\subsection{Anderson Algorithm}
+				There are many equivalent ways to formulate Anderson acceleration method.
+				I report the one in \citeauthor{Walker} \cite{Walker}.\\
+				Several adjustment can be made to address specific problems, but .....
+				
+				
+				\begin{algorithmic}
+					\State Given $x_0$ and $m \geq 1$
+					\State Set $x_1 = g(x_0)$
+					\For {$k = 1, 2, ...$ until convergence}
+					\State Set $m_k = min\{m, k\}$
+					\State Set $F_k = (f_{k-m_k}, ... , f_k)$, where $f_i = g(x_i)-x_{i}$
+					\State Determine $\alpha^{(k)} = (\alpha^{(k)}_0 , ..., \alpha^{(k)}_{m_k} )^T$, subject to 
+					$\sum^{m_k}_{i=0} {\alpha_i = 1}$, that solves
+					$$\min_{\alpha=(\alpha_0,...,\alpha_{m_k} )^T} \|F_k \alpha\|_2$$
+					\State Set $x_{k+1} = (1-\beta) \sum^{m_k}_{i=0} {\alpha_i^{(k)} x_{k-m_{k}+i}}	+\beta \sum^{m_k}_{i=0} {\alpha_i^{(k)} g(x_{k-m_{k}+i})}$   
+					\EndFor
+				\end{algorithmic}
+				
+			The new value is obtained through a linear combination of the previous iterates and their evaluations.
+			The coefficients are found through a minimization problem, in this case written as a constrained
+			problem, but an unconstrained form is usually chosen for the implementation \cite{Fang}\cite{Walker}.\\
+			Notice that the algorithm depends on two parameters: $\beta$, a relaxation parameter that has also
+			a special interpretation when the algorithm is seen as a multisecant method \cite{Fang}, and $m$,
+			a memory parameter, that represents the number of previous iterates considered in the calculations.
+			
+				
+				
+		\section{C++ interface for a generic accelerator}
+		\label{sec:C++}
+			aaaa
+		\section{FEM application}
+		\label{sec:FEM}
+			aaa
 
-\usepackage{url}
-\usepackage{lipsum}
-\usepackage{graphicx}
-\usepackage{color}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{accents}
-\usepackage{tikz}
-\usepackage[backend=bibtex,style=numeric]{biblatex}
-\addbibresource{bibliografia.bib}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\title{
-\vspace{-30mm}\begin{figure}[h]
-\centering
-\includegraphics[width=2in]{logo_polimi.png}
-% \label{escudo}
-\end{figure}Anderson Acceleration for Fixed-Point Iterations}
-\author{Martino Ischia\\ \footnotesize{Supervisor: Prof. Formaggia}}
-\date{December 2020}
-
-
-\begin{document}
-\maketitle
-
-\tableofcontents
-
-\section{Introduction}
-	Fang... \cite{Fang}
-
-\section{Results}
-\subsection{One-dimensional Cases}
-
-\printbibliography[heading=bibintoc,
-title={Bibliography}]
-
-\end{document}
+						
+			\printbibliography[heading=bibintoc,
+			title={Bibliography}]
+						
+					
+	\end{document}
+								

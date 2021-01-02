@@ -7,6 +7,7 @@
 	#include <deque>
 	#include <cassert>
 	#include "FixedPointTraits.hpp"
+	#include "RotatingMatrix.hpp"
 	#include <algorithm>
 	
 	#ifndef Traits
@@ -95,33 +96,54 @@
 			AndersonAccelerator(IterationFun&& IF, std::size_t dim, double p =1, std::size_t m = 10): 
 			Iterator(std::forward<IterationFun>(IF), dim ), mixingParameter(p), memory(std::min (m, dim)) {}
 			
+			// Very important: the Matrices X and F must be in the correct state
+			// Also the past must contain 2 elements if I don't want the simple mixing
 			Vector operator()(const std::deque < Vector > &) override;
 			
-			void reset() {
-				evaluated = false ; 
-				evaluation_history.clear();
-				evaluation_history.shrink_to_fit();
+			void reset() override 
+			{
+				X.reset();
+				F.reset();
 			}
 			
+			//!
+			//! @param
+			void SetUp (const std::deque < Vector > & past)
+			{				
+				if ( past.size() < 3 or memory < 3 ) return;
+				
+				else 
+				{
+					int m_k = std::min( memory, past.size() )- 1u;
+					
+					for (int j = 0; j < m_k -1u ; ++j )
+					{
+						X.push_back( past [ past.size()-m_k+j ]- past [ past.size()-m_k+j-1 ] );		
+					}
+					
+					for (int j = 0; j < m_k - 1u; ++j )
+					{
+						F.push_back
+						(
+							phi ( past [ past.size()-m_k+j ] ) -
+							phi ( past [ past.size()-m_k+j-1 ] ) -
+							X.col(j)
+						);
+					}		
+				}
+			}
 			private:
 			//! A sort of relaxation parameter.
 			double mixingParameter;
 			
 			//! How many past iterates are considered at each step.
 			std::size_t memory;	
+			//previous residual vector
+			Vector fOld;
 			
-			//! Contains the values of the iterator function evaluated in the past iterations.
-			std::deque < Vector > evaluation_history;
+			apsc::RotatingMatrixX <double , apsc::InsertStrategy::NewestReplacesOldest > X {dimension, memory };
 			
-			bool evaluated = false ;
-			
-			//! Fills evaluation_history
-			//! @param past the past iteration values
-			void evaluate (const std::deque < Vector > & past) {
-				evaluation_history.resize( std::min (past.size(), memory) );
-				std::transform( past.cbegin() , past.cend() , evaluation_history.begin() , phi ) ;
-			}
-			
+			apsc::RotatingMatrixX <double , apsc::InsertStrategy::NewestReplacesOldest > F { dimension, memory };
 		};
 		
 		//! Here only the last value of the past container is used
