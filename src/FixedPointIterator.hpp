@@ -19,7 +19,7 @@
 			//! number of data to keep track
 			unsigned int memory = maxIter;
 			//! number of data to print with printHistory function
-			unsigned int print_memory = 5;
+			unsigned int print_memory = 30;
 		};
 		
 		

@@ -106,10 +106,10 @@
 				F.reset();
 			}
 			
-			//!
+			//! ONLY IF YOU START ANDERSON WITH ANOTHER ITERATION HISTORY
 			//! @param
 			void SetUp (const std::deque < Vector > & past)
-			{				
+			{
 				if ( past.size() < 3 or memory < 3 ) return;
 				
 				else 
@@ -141,9 +141,9 @@
 			//previous residual vector
 			Vector fOld;
 			
-			apsc::RotatingMatrixX <double , apsc::InsertStrategy::NewestReplacesOldest > X {dimension, memory };
+			apsc::RotatingMatrixX <double , apsc::InsertStrategy::NewestReplacesOldest > X {dimension, memory -1};
 			
-			apsc::RotatingMatrixX <double , apsc::InsertStrategy::NewestReplacesOldest > F { dimension, memory };
+			apsc::RotatingMatrixX <double , apsc::InsertStrategy::NewestReplacesOldest > F { dimension, memory -1};
 		};
 		
 		//! Here only the last value of the past container is used

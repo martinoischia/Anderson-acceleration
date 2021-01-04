@@ -11,6 +11,8 @@
 #include "MM_readers3.3.hpp"
 #include "simpleRichardson.hpp"
 #include "Timing.hpp"
+#include <unsupported/Eigen/IterativeSolvers>
+
 int main(int argc, char** argv)
 {
 	std::cout << "\n********************EXAMPLE 2****************************\n\n\n\n";
@@ -35,7 +37,8 @@ int main(int argc, char** argv)
 	std::cout << "\nProblem dimension:" << dimension << std::endl;
 	std::cout << "\nMatrix Frobenius norm: " << MMM.norm() << std::endl;
 	std::cout << "\n***COMPUTING PRECONDITIONER" <<std::endl;
-	Eigen::BiCGSTAB < Matrix , Eigen::IncompleteLUT <double >> eigenSolver(MMM);
+	// Eigen::BiCGSTAB < Matrix , Eigen::IncompleteLUT <double >> eigenSolver(MMM);
+	Eigen::BiCGSTAB < Matrix > eigenSolver(MMM);
 	eigenSolver.compute(MMM);
 	t.write( "computing");
 	
@@ -95,4 +98,29 @@ int main(int argc, char** argv)
 	t4.write( "Anderson");
 	FPI_2.printResidualHistory();
 	FPI_2.printResult();
+	FPI_2.reset();
+
+
+	// Tentative Eigen unsupported GMRES usage, but doesn't work exactly like it should
+
+	std::cout<<"\n*** APPLYING GMRES (is it the same if Anderson memory is infinity?):\n\n";
+
+	// Eigen::GMRES< Matrix, Eigen::IncompleteLUT <double > > GMRESSolver( relaxationParameter*MMM);
+	Eigen::GMRES< Matrix > GMRESSolver( relaxationParameter*MMM);
+	std::cout << "tolerance " <<GMRESSolver.tolerance() << std::endl;
+	Timing t5;
+	GMRESSolver.set_restart(750);
+	std::size_t GMRESiter = get_problem_data ("FPI_2_param/GMRESiter", 5);	
+	GMRESSolver.setMaxIterations(GMRESiter);
+	Vector sol = GMRESSolver.solve(relaxationParameter*MMV);
+	t4.write( "GMRES");
+		std::cout << "info " <<GMRESSolver.info() << std::endl;
+
+	Vector residuum = MMM*sol-MMV;
+	// for (int i = 0; i < dimension; ++i) std::cout << residuum(i) << "\n";
+	std::cout << "tentative error     " << GMRESSolver.error() << std::endl;
+	std::cout << "\n#iterations:     " << GMRESSolver.iterations() << std::endl;
+	std::cout<< "norm of residuum\n" << residuum.norm() << std::endl;
+	
+	
 }				

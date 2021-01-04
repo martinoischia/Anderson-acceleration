@@ -67,6 +67,7 @@ namespace FixedPoint
 			F.push_back ( f - fOld);
 			fOld = f;
 			//Calculating the solution using QR decomposition for solving least square problem
+			//....Theoretical note about permutation matrix will be in the report....
 			return (past.back() + mixingParameter*f - ( X.getMatrix() + mixingParameter*F.getMatrix())*F.getMatrix().colPivHouseholderQr().solve(f)) ;
 		}
 	}

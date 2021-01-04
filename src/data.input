@@ -10,21 +10,22 @@ lambda = 0.5
 x00 = 5
 x01 = 7
 maxIter = 50
-memory = 10
+memory = 30
 mixingParameter = 1
 AndersonMemory = 5
 tolerance = 1.e-10
 
 [files]
 
-MMMfile = ./MM\ matrixes/sherman2.mtx        ### file to read the matrix
-MMVfile = ./MM\ matrixes/sherman2.mtx   ### file to read the vector
+MMMfile = ../Include/MM\ matrixes/fidapm37.mtx        ### file to read the matrix
+MMVfile = ../Include/MM\ matrixes/fidapm37.mtx   ### file to read the vector
 
 [FPI_2_param]
 
-maxIter = 5000
+maxIter = 30
 memory = 100
 relaxationParameter = 1 # for Richardson
-mixingParameter = 1
-AndersonMemory = 10
+mixingParameter = 0.4
+AndersonMemory = 750
 tolerance = 1.e-10
+GMRESiter = 30
