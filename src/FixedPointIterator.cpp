@@ -1,5 +1,5 @@
 //! @file FixedPointIterator.cpp
-
+//! @brief Implements FixedPoint::FixedPointIterator::compute and other utilities
 #include "FixedPointIterator.hpp"
 
 namespace FixedPoint {

@@ -1,7 +1,7 @@
 # Project for the PACS and NAPDE courses, Politecnico di Milano
-# Martino Ischia, dicembre 2020
+# Martino Ischia, December 2020 - January 2021
 
-- The code is in the *src* directory. 
+- Code and compile instructions are in the *src* directory. 
 - *Include* contains some external utilities that
 are used. For compiling the code you will also need the [Eigen library](http://eigen.tuxfamily.org/)
 version 3 (I am using 3.3).

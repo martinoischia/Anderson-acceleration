@@ -1,0 +1,9 @@
+set terminal epslatex size 10 cm, 5 cm 
+set output "simple_example_residuals.tex"
+
+set logscale y
+set xlabel 'Iteration \#'
+set ylabel 'Residual'
+set style line 1 pt 4
+set style line 2 lc "blue" pt 4
+plot "simple_example_residuals_data.txt" using 1:2 title "Fixed-point iterations" ls 1 with linespoint, "simple_example_residuals_data.txt" using 1:3 title "Anderson algorithm" ls 2 with linespoint

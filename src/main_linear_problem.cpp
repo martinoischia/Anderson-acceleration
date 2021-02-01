@@ -13,16 +13,20 @@
 #include "Timing.hpp"
 #include <unsupported/Eigen/IterativeSolvers>
 
+#include<type_traits>
+
 int main(int argc, char** argv)
 {
-	std::cout << "\n********************EXAMPLE 2****************************\n\n\n\n";
 	using namespace FixedPoint;
+	static_assert ( std::is_same <Traits, SparseTraits>() , "Since we use MatrixMarket sparse matrices, Traits must be SparseTraits");
+	
+	std::cout << "\n********************EXAMPLE 2****************************\n\n\n\n";
 	GetPot get_filename (argc, argv);
 	std::string filename = get_filename ("filename", "data.input");
 	
 	GetPot get_problem_data (filename.c_str ());
 	
-	using Vector = Traits::Vector; // Traits is a macro defined in Accelerators.hpp, if not defined in other ways
+	using Vector = Traits::Vector;
 	using Matrix = Traits::Matrix;
 	
 	// reading the matrix and the RHS

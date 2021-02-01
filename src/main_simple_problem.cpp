@@ -1,5 +1,5 @@
-//! @file main_FixedPoint.cpp
-//! @brief A first example
+//! @file main_simple_problem.cpp
+//! @brief A simple example for testing
 //!
 //! It contains a simple fixed-point problem that is solved with different acceleration methods.
 //! Many parameters can be read from input through the GetPot utility.
@@ -15,7 +15,6 @@ int main(int argc, char** argv)
 	
 	GetPot get_problem_data (filename.c_str ());
 	
-	double lambda = get_problem_data ("FPI_1_param/lambda",  18.);
 	using Vector = Traits::Vector; // Traits is a macro defined in Accelerators.hpp, if not defined in other ways
 	using Matrix = Traits::Matrix;
 	
@@ -23,6 +22,7 @@ int main(int argc, char** argv)
 	// Two simple fixed point problems: I commented the one in dimension 2
 	// and used the one in dimension 3
 	
+	// double lambda = get_problem_data ("FPI_1_param/lambda",  18.);
 	// // a function from R^2 to R^2... 
 	// std::size_t dimension = 2;
 	// auto phi_1 = [lambda, dimension] (Vector const & x){
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 	//Solving
 	std::cout<<"\n*** WITH BASIC METHOD:\n\n";
 	FPI_1.compute(startingPoint_1);
-	FPI_1.printHistory();
+	FPI_1.printResidualHistory();
 	FPI_1.printResult();
 	
 	// Now with the acceleration provided by the alternate secant method
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	
 	std::cout<<"\n*** WITH SECANT ACCELERATION:\n\n";
 	FPI_1.compute(startingPoint_1);
-	FPI_1.printHistory();
+	FPI_1.printResidualHistory();
 	FPI_1.printResult();
 	
 	// Now with the Anderson Accelerator
@@ -82,10 +82,6 @@ int main(int argc, char** argv)
 	//Solving
 	std::cout<<"\n*** WITH ANDERSON ACCELERATION:\n\n";
 	FPI_1.compute(startingPoint_1);
-	FPI_1.printHistory();
+	FPI_1.printResidualHistory();
 	FPI_1.printResult();	
 	}
-	
-	
-	
-		

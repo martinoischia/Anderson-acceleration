@@ -1,5 +1,5 @@
 #//! @file data.input
-#//! @brief File used as input to the main program for reading many
+#//! @brief File used as input to the main programs for reading many
 #//! parameters of interest.
 #//!
 #//! Parameters are read making use of the GetPot utility.

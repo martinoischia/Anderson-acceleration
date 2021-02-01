@@ -9,15 +9,16 @@ EXEC=$(exe_sources:.cpp=)
 exec1=main_simple_problem
 exec2=main_linear_problem
 EIGEN_DIR=$(mkEigenInc)
+
+#==========================
+#Standard options to be fed into the compilation commands
+
 STANDARD=c++17
 OPTFLAGS=-O3
 DEFINE=-DNDEBUG
 # OPTFLAGS=-g
-# DEFINE=-DTraits=VectorTraits
-# DEFINE=-DEigenSolver
-#==========================
-
-
+# DEFINE+=-DTraits=DenseTraits
+# DEFINE+=-DEigenSolver
 LINK.o = $(CXX) $(LDFLAGS)
 CPPFLAGS=-I. -I../Include -I$(EIGEN_DIR) $(DEFINE)
 CXXFLAGS=-std=$(STANDARD) $(OPTFLAGS)
