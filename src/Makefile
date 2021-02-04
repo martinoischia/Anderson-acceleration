@@ -1,13 +1,15 @@
 # Useful variables
 SRCS=$(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
-OBJS1 = $(filter-out main_lin%.o, $(OBJS))
-OBJS2 = $(filter-out main_sim%.o, $(OBJS))
+OBJS1 = $(filter-out main_lin%.o main_gau%.o, $(OBJS))
+OBJS2 = $(filter-out main_sim%.o main_gau%.o, $(OBJS))
+OBJS3 = $(filter-out main_lin%.o main_sim%.o, $(OBJS))
 HEADERS=$(wildcard *.hpp)
 exe_sources=$(filter main%.cpp,$(SRCS))
 EXEC=$(exe_sources:.cpp=)
 exec1=main_simple_problem
 exec2=main_linear_problem
+exec3=main_gauss_seidel
 EIGEN_DIR=$(mkEigenInc)
 
 #==========================
@@ -32,7 +34,7 @@ LDLIBS=
 
 .DEFAULT_GOAL = all
 
-all: makedep $(exec1) $(exec2)
+all: makedep $(exec1) $(exec2) $(exec3)
 
 clean:
 	$(RM) -f $(EXEC) $(OBJS) make.dep doxygen_sqlite3.db; rm -f -r html latex
@@ -45,6 +47,8 @@ doc:
 $(exec1): $(OBJS1)
 
 $(exec2): $(OBJS2)
+
+$(exec3): $(OBJS3)
 
 run:
 	./$(exec1); ./$(exec2)
