@@ -1,0 +1,14 @@
+set terminal epslatex size 10 cm, 5 cm 
+set output "gauss.tex"
+
+set logscale y
+set xlabel 'Iteration \#'
+set ylabel 'Residual'
+set style line 1 pt 4 ps 0.5
+set style line 2 lc "blue" pt 4 ps 0.5
+unset mytics
+
+set key b l Left reverse
+
+plot "gauss1_data.txt" using 1 title "Gauss-Seidel iterations" ls 1 with linespoint, "gauss2_data.txt" using 1 title "Anderson algorithm" ls 2 with linespoint
+# pause mouse key

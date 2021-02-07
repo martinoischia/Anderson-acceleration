@@ -45,6 +45,9 @@
 			//! Resetting the Iterator. The meaning will be clear in the derived classes.
 			virtual void reset(){}
 			
+			//! SetUp method. For AndersonAccelerator class.
+			virtual void SetUp (const std::deque<Vector> &){}
+			
 			//! Destructor is virtual for the classes that will inherit from here
 			virtual ~Iterator(){};
 			
@@ -88,7 +91,7 @@
 			
 			//! Resets the #firstTime bool
 			void reset() override {firstTime=true;}
-
+			
 			private:
 			
 			//! Being a two-level algorithm, I need keep in memory \f$\Delta x_{n-1}\f$
@@ -135,15 +138,18 @@
 			//! @brief For advanced use
 			//!
 			//! In the case AndersonAccelerator is called with \p past that was not built up by AndersonAccelerator itself,
-			//! this method sets matrices #X and #F in the proper state
-			void SetUp (const std::deque < Vector > & past)
+			//! this method sets matrices #X and #F and vector #fOld in the proper state
+			void SetUp (const std::deque < Vector > & past) override
 			{
-				if ( past.size() < 3 or memory < 3 ) return;
-				
+				reset();
+				if ( past.size() < 2 or memory < 2 ) return;
+				if ( past.size() == 2 or memory == 2) {
+					fOld = phi(past[past.size()-2]) - past[past.size()-2];
+				}
 				else 
 				{
 					int m_k = std::min( memory, past.size() )- 1u;
-					
+					fOld = phi(past[past.size()-2]) - past[past.size()-2];
 					for (int j = 0; j < m_k -1u ; ++j )
 					{
 						X.push_back( past [ past.size()-m_k+j ]- past [ past.size()-m_k+j-1 ] );		

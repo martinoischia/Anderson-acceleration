@@ -24,7 +24,7 @@
   \providecommand\rotatebox[2]{#2}%
   \@ifundefined{ifGPcolor}{%
     \newif\ifGPcolor
-    \GPcolorfalse
+    \GPcolortrue
   }{}%
   \@ifundefined{ifGPblacktext}{%
     \newif\ifGPblacktext
@@ -83,34 +83,44 @@
     \fi%
     \setlength{\fboxrule}{0.5pt}%
     \setlength{\fboxsep}{1pt}%
-\begin{picture}(5668.00,2834.00)%
+\begin{picture}(9070.00,4534.00)%
     \gplgaddtomacro\gplbacktext{%
       \csname LTb\endcsname%%
-      \put(1342,863){\makebox(0,0)[r]{\strut{}$1\times10^{-10}$}}%
-      \put(1342,1181){\makebox(0,0)[r]{\strut{}$1\times10^{-8}$}}%
-      \put(1342,1499){\makebox(0,0)[r]{\strut{}$1\times10^{-6}$}}%
-      \put(1342,1818){\makebox(0,0)[r]{\strut{}$0.0001$}}%
-      \put(1342,2136){\makebox(0,0)[r]{\strut{}$0.01$}}%
-      \put(1342,2454){\makebox(0,0)[r]{\strut{}$1$}}%
-      \put(1474,484){\makebox(0,0){\strut{}$0$}}%
-      \put(2107,484){\makebox(0,0){\strut{}$5$}}%
-      \put(2740,484){\makebox(0,0){\strut{}$10$}}%
-      \put(3373,484){\makebox(0,0){\strut{}$15$}}%
-      \put(4005,484){\makebox(0,0){\strut{}$20$}}%
-      \put(4638,484){\makebox(0,0){\strut{}$25$}}%
-      \put(5271,484){\makebox(0,0){\strut{}$30$}}%
+      \put(682,930){\makebox(0,0)[r]{\strut{}2}}%
+      \put(682,1381){\makebox(0,0)[r]{\strut{}4}}%
+      \put(682,1832){\makebox(0,0)[r]{\strut{}6}}%
+      \put(682,2283){\makebox(0,0)[r]{\strut{}8}}%
+      \put(682,2734){\makebox(0,0)[r]{\strut{}10}}%
+      \put(682,3185){\makebox(0,0)[r]{\strut{}15}}%
+      \put(682,3636){\makebox(0,0)[r]{\strut{}20}}%
+      \put(682,4087){\makebox(0,0)[r]{\strut{}25}}%
+      \put(1052,484){\makebox(0,0){\strut{}1e-06}}%
+      \put(1528,484){\makebox(0,0){\strut{}1e-05}}%
+      \put(2004,484){\makebox(0,0){\strut{}0.0001}}%
+      \put(2480,484){\makebox(0,0){\strut{}0.001}}%
+      \put(2956,484){\makebox(0,0){\strut{}0.01}}%
+      \put(3432,484){\makebox(0,0){\strut{}0.1}}%
+      \put(3908,484){\makebox(0,0){\strut{}0.5}}%
+      \put(4383,484){\makebox(0,0){\strut{}1}}%
+      \put(4859,484){\makebox(0,0){\strut{}2}}%
+      \put(5335,484){\makebox(0,0){\strut{}5}}%
+      \put(5811,484){\makebox(0,0){\strut{}10}}%
+      \put(6287,484){\makebox(0,0){\strut{}50}}%
+      \put(6763,484){\makebox(0,0){\strut{}100}}%
+      \put(7239,484){\makebox(0,0){\strut{}1000}}%
     }%
     \gplgaddtomacro\gplfronttext{%
       \csname LTb\endcsname%%
-      \put(209,1658){\rotatebox{-270}{\makebox(0,0){\strut{}Residual}}}%
-      \put(3372,154){\makebox(0,0){\strut{}Iteration \#}}%
+      \put(209,2508){\rotatebox{-270}{\makebox(0,0){\strut{}$m$ (memory)}}}%
+      \put(4145,154){\makebox(0,0){\strut{}$\beta$ (relaxation)}}%
       \csname LTb\endcsname%%
-      \put(4284,2440){\makebox(0,0)[r]{\strut{}Fixed-point iterations}}%
-      \csname LTb\endcsname%%
-      \put(4284,2220){\makebox(0,0)[r]{\strut{}Anderson algorithm}}%
+      \put(8109,1190){\makebox(0,0)[l]{\strut{}$0.001$}}%
+      \put(8109,2657){\makebox(0,0)[l]{\strut{}$0.01$}}%
+      \put(8109,4125){\makebox(0,0)[l]{\strut{}$0.1$}}%
+      \put(8835,2508){\rotatebox{-270}{\makebox(0,0){\strut{}Time taken ($s$)}}}%
     }%
     \gplbacktext
-    \put(0,0){\includegraphics{simple_example_residuals}}%
+    \put(0,0){\includegraphics{heat_map}}%
     \gplfronttext
   \end{picture}%
 \endgroup

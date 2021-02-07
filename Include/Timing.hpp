@@ -9,18 +9,13 @@
 		private:
 		
 		double st;
-		double gettime()
-		{
-			return clock();
-		}
+		double gettime(){return clock();}
+		
 		public:
-		Timing() 
-		{
-			st = gettime(); 
-		}
-		double time() {return (gettime()- st)/CLOCKS_PER_SEC;}
-		void write(const std::string & mes)
-		{
+		Timing(){st = gettime();}
+		void reset(){st = gettime();}
+		double time(){return (gettime()- st)/CLOCKS_PER_SEC;}
+		void write(const std::string & mes){
 			std::cout << "TIME: " + mes + " is done in " << time() <<" s" << std::endl;
 			st = gettime();
 		}

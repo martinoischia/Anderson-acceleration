@@ -1,45 +1,59 @@
 # Useful variables
 SRCS=$(wildcard *.cpp)
 OBJS = $(SRCS:.cpp=.o)
-OBJS1 = $(filter-out main_lin%.o main_gau%.o, $(OBJS))
-OBJS2 = $(filter-out main_sim%.o main_gau%.o, $(OBJS))
-OBJS3 = $(filter-out main_lin%.o main_sim%.o, $(OBJS))
 HEADERS=$(wildcard *.hpp)
 exe_sources=$(filter main%.cpp,$(SRCS))
+exe_objects=$(filter-out main%.o,$(OBJS))
 EXEC=$(exe_sources:.cpp=)
-exec1=main_simple_problem
-exec2=main_linear_problem
-exec3=main_gauss_seidel
+exec1:=main_simple_problem
+exec2:=main_linear_problem
+exec3:=main_gauss_seidel
+exec4:=main_testing_parameter
+OBJS1 = $(exe_objects) $(exec1:=.o) 
+OBJS2 = $(exe_objects) $(exec2:=.o) 
+OBJS3 = $(exe_objects) $(exec3:=.o) 
+OBJS4 = $(exec4:=.o) 
+
+
 EIGEN_DIR=$(mkEigenInc)
 
+#==========================
 #==========================
 #Standard options to be fed into the compilation commands
 
 STANDARD=c++17
+
 OPTFLAGS=-O3
 DEFINE=-DNDEBUG
+
 # OPTFLAGS=-g
-# DEFINE+=-DTraits=DenseTraits
+
+#============ following block should be all commented or all not commented
+DEFINE+=-DTraits=DenseTraits
+EXEC:= $(filter-out $(exec2),$(EXEC))
+exec2:=
+#============
+
 # DEFINE+=-DEigenSolver
 LINK.o = $(CXX) $(LDFLAGS)
 CPPFLAGS=-I. -I../Include -I$(EIGEN_DIR) $(DEFINE)
 CXXFLAGS=-std=$(STANDARD) $(OPTFLAGS)
 LDFLAGS=-std=$(STANDARD) $(OPTFLAGS)
 LDLIBS=
-
+#==========================
 #==========================
 # Targets
 
-.phony= all clean distclean doc run makedep
+.phony= all clean distclean doc run makedep parameters $(exec1) $(exec2) $(exec3) $(exec4)
 
 .DEFAULT_GOAL = all
 
-all: makedep $(exec1) $(exec2) $(exec3)
+all: makedep $(EXEC)
 
 clean:
 	$(RM) -f $(EXEC) $(OBJS) make.dep doxygen_sqlite3.db; rm -f -r html latex
 
-#distclean: clean
+# distclean: clean
 
 doc:
 	doxygen Doxyfile
@@ -50,8 +64,13 @@ $(exec2): $(OBJS2)
 
 $(exec3): $(OBJS3)
 
-run:
-	./$(exec1); ./$(exec2)
+$(exec4): $(OBJS4)
+
+run: $(exec1) $(exec2) $(exec3)
+	./$(exec1); ./$(exec2); ./$(exec3)
+	
+parameters: $(exec4) $(exec3)
+	./$(exec4) > ../documents/Include/heat_map_data.txt
 
 makedep: $(SRCS)
 	$(RM) make.dep

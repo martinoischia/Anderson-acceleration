@@ -56,17 +56,21 @@
 			const Iterator & getIterator() const {return *iterator;}
 			//! Gets #iterator
 			Iterator & getIterator(){return *iterator;}
+			//! Gets #iterator (pointer version)
+			std::unique_ptr<Iterator> & getIterator_p(){return iterator;}
+
+			
 			
 			//! @brief Calculates the sequence of iterates until convergence up to FixedPointOptions::tolerance or maximum iteration is reached
 			//!
 			//! If it starts from the first iteration, a default initial vector of zeros is used.
-			//! @return The last computed vector
-			Vector compute ();
+			//! @return True if converged
+			bool compute ();
 			//! @brief Calculates the sequence of iterates until convergence up to FixedPointOptions::tolerance or maximum iteration is reached
 			//!
 			//! @param x0 suggested initial value: it is used only if there are no past iterations.
-			//! @return The last computed vector
-			Vector compute ( Vector const & x0 ) {if ( history.empty() ) history.emplace_back ( x0 ); return compute(); }
+			//! @return True if converged
+			bool compute ( Vector const & x0 ) {if ( history.empty() ) history.emplace_back ( x0 ); return compute(); }
 			
 			//! @brief Resets the state of the object
 			//!
@@ -100,6 +104,12 @@
 			
 			//! Gets #history
 			const std::deque < Vector > & getHistory () const { return history ;}
+			
+			//! Gets #iteration (const version)
+			const unsigned int getIteration () const {return iteration ;}
+			
+			//! Gets #iteration 
+			unsigned int & getIteration () {return iteration ;}
 			
 			private:
 			

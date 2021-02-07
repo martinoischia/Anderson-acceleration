@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 	
 	//The iterator object
 	FixedPointIterator FPI_1;
-	FPI_1.setIterator( std::make_unique <Iterator> (phi_1, dimension) ); // care that phi_1 has been moved
+	FPI_1.setIterator( std::make_unique <Iterator> (std::move(phi_1), dimension) ); // care that phi_1 has been moved
 	FPI_1.getOptions().maxIter = get_problem_data ("FPI_1_param/maxIter", 100);
 	FPI_1.getOptions().memory = get_problem_data ("FPI_1_param/memory", 100);
 	FPI_1.getOptions().tolerance = get_problem_data ("FPI_1_param/tolerance", 0.01);

@@ -1,9 +1,9 @@
 %!PS-Adobe-2.0 EPSF-2.0
-%%Title: simple_example_residuals.tex
+%%Title: heat_map.tex
 %%Creator: gnuplot 5.2 patchlevel 8
-%%CreationDate: Mon Feb 01 22:32:17 2021
+%%CreationDate: Sun Feb 07 18:20:26 2021
 %%DocumentFonts: 
-%%BoundingBox: 50 50 333 191
+%%BoundingBox: 50 50 503 276
 %%EndComments
 %%BeginProlog
 /gnudict 256 dict def
@@ -12,7 +12,7 @@ gnudict begin
 % The following true/false flags may be edited by hand if desired.
 % The unit line width and grayscale image gamma correction may also be changed.
 %
-/Color false def
+/Color true def
 /Blacktext true def
 /Solid false def
 /Dashlength 1 def
@@ -43,7 +43,7 @@ gnudict begin
 /vpt vpt_ def
 /doclip {
   ClipToBoundingBox {
-    newpath 50 50 moveto 333 50 lineto 333 191 lineto 50 191 lineto closepath
+    newpath 50 50 moveto 503 50 lineto 503 276 lineto 50 276 lineto closepath
     clip
   } if
 } def
@@ -436,12 +436,12 @@ systemdict /pdfmark known not {
   userdict /pdfmark systemdict /cleartomark get put
 } if
 SDict begin [
-  /Title (simple_example_residuals.tex)
+  /Title (heat_map.tex)
   /Subject (gnuplot plot)
   /Creator (gnuplot 5.2 patchlevel 8)
 %  /Producer (gnuplot)
 %  /Keywords ()
-  /CreationDate (Mon Feb 01 22:32:17 2021)
+  /CreationDate (Sun Feb 07 18:20:26 2021)
   /DOCINFO pdfmark
 end
 } ifelse
@@ -481,228 +481,393 @@ doclip
 0.050 0.050 scale
 0 setgray
 newpath
+gsave % colour palette begin
+/maxcolors 0 def
+/HSV2RGB {  exch dup 0.0 eq {pop exch pop dup dup} % achromatic gray
+  { /HSVs exch def /HSVv exch def 6.0 mul dup floor dup 3 1 roll sub
+     /HSVf exch def /HSVi exch cvi def /HSVp HSVv 1.0 HSVs sub mul def
+	 /HSVq HSVv 1.0 HSVs HSVf mul sub mul def 
+	 /HSVt HSVv 1.0 HSVs 1.0 HSVf sub mul sub mul def
+	 /HSVi HSVi 6 mod def 0 HSVi eq {HSVv HSVt HSVp}
+	 {1 HSVi eq {HSVq HSVv HSVp}{2 HSVi eq {HSVp HSVv HSVt}
+	 {3 HSVi eq {HSVp HSVq HSVv}{4 HSVi eq {HSVt HSVp HSVv}
+	 {HSVv HSVp HSVq} ifelse} ifelse} ifelse} ifelse} ifelse
+  } ifelse} def
+/Constrain {
+  dup 0 lt {0 exch pop}{dup 1 gt {1 exch pop} if} ifelse} def
+/CMY2RGB {  1 exch sub exch 1 exch sub 3 2 roll 1 exch sub 3 1 roll exch } def
+/XYZ2RGB {  3 copy -0.9017 mul exch -0.1187 mul add exch 0.0585 mul exch add
+  Constrain 4 1 roll 3 copy -0.0279 mul exch 1.999 mul add exch
+  -0.9844 mul add Constrain 5 1 roll -0.2891 mul exch -0.5338 mul add
+  exch 1.91 mul exch add Constrain 3 1 roll} def
+/SelectSpace {ColorSpace (HSV) eq {HSV2RGB}{ColorSpace (XYZ) eq {
+  XYZ2RGB}{ColorSpace (CMY) eq {CMY2RGB}{ColorSpace (YIQ) eq {YIQ2RGB}
+  if} ifelse} ifelse} ifelse} def
+/InterpolatedColor false def
+/cF7 {sqrt} bind def	% sqrt(x)
+/cF5 {dup dup mul mul} bind def	% x^3
+/cF15 {360 mul sin} bind def	% sin(360x)
+/pm3dround {maxcolors 0 gt {dup 1 ge
+	{pop 1} {maxcolors mul floor maxcolors 1 sub div} ifelse} if} def
+/pm3dGamma 1.0 1.5 Gamma mul div def
+/ColorSpace (RGB) def
+Color InterpolatedColor or { % COLOUR vs. GRAY map
+  InterpolatedColor { %% Interpolation vs. RGB-Formula
+    /g {stroke pm3dround /grayv exch def interpolate
+        SelectSpace setrgbcolor} bind def
+  }{
+  /g {stroke pm3dround dup cF7 Constrain exch dup cF5 Constrain exch cF15 Constrain 
+       SelectSpace setrgbcolor} bind def
+  } ifelse
+}{
+  /g {stroke pm3dround pm3dGamma exp setgray} bind def
+} ifelse
 1.000 UL
 LTb
 LCb setrgbcolor
 [] 0 setdash
-1474 863 M
+814 930 M
 63 0 V
-3734 0 R
+6600 0 R
 -63 0 V
 stroke
 LTb
-1474 1181 M
+814 1381 M
 63 0 V
-3734 0 R
+6600 0 R
 -63 0 V
 stroke
-1474 1499 M
+814 1832 M
 63 0 V
-3734 0 R
+6600 0 R
 -63 0 V
 stroke
-1474 1818 M
+814 2283 M
 63 0 V
-3734 0 R
+6600 0 R
 -63 0 V
 stroke
-1474 2136 M
+814 2734 M
 63 0 V
-3734 0 R
+6600 0 R
 -63 0 V
 stroke
-1474 2454 M
+814 3185 M
 63 0 V
-3734 0 R
+6600 0 R
 -63 0 V
 stroke
-1474 704 M
+814 3636 M
+63 0 V
+6600 0 R
+-63 0 V
+stroke
+814 4087 M
+63 0 V
+6600 0 R
+-63 0 V
+stroke
+1052 704 M
 0 63 V
-0 1846 R
+0 3546 R
 0 -63 V
 stroke
-2107 704 M
+1528 704 M
 0 63 V
-0 1846 R
+0 3546 R
 0 -63 V
 stroke
-2740 704 M
+2004 704 M
 0 63 V
-0 1846 R
+0 3546 R
 0 -63 V
 stroke
-3373 704 M
+2480 704 M
 0 63 V
-0 1846 R
+0 3546 R
 0 -63 V
 stroke
-4005 704 M
+2956 704 M
 0 63 V
-0 1846 R
+0 3546 R
 0 -63 V
 stroke
-4638 704 M
+3432 704 M
 0 63 V
-0 1846 R
+0 3546 R
 0 -63 V
 stroke
-5271 704 M
+3908 704 M
 0 63 V
-0 1846 R
+0 3546 R
+0 -63 V
+stroke
+4383 704 M
+0 63 V
+0 3546 R
+0 -63 V
+stroke
+4859 704 M
+0 63 V
+0 3546 R
+0 -63 V
+stroke
+5335 704 M
+0 63 V
+0 3546 R
+0 -63 V
+stroke
+5811 704 M
+0 63 V
+0 3546 R
+0 -63 V
+stroke
+6287 704 M
+0 63 V
+0 3546 R
+0 -63 V
+stroke
+6763 704 M
+0 63 V
+0 3546 R
+0 -63 V
+stroke
+7239 704 M
+0 63 V
+0 3546 R
 0 -63 V
 stroke
 1.000 UL
 LTb
-1474 2613 N
-0 -1909 V
-3797 0 V
-0 1909 V
--3797 0 V
+814 4313 N
+814 704 L
+6663 0 V
+0 3609 V
+-6663 0 V
 Z stroke
 1.000 UP
 1.000 UL
 LTb
 % Begin plot #1
-1.000 UP
 1.000 UL
 LTb
-LC0 setrgbcolor
-LCb setrgbcolor
-1.000 UP
-1.000 UL
-LTb
-LC0 setrgbcolor
-4416 2440 M
-591 0 V
-1601 2591 M
-126 -13 V
-127 -132 V
-126 -84 V
-127 -87 V
-126 -77 V
-127 -81 V
-127 -63 V
-126 -72 V
-127 -63 V
-126 -59 V
-127 -64 V
-126 -61 V
-127 -59 V
-127 -62 V
-126 -60 V
-127 -60 V
-126 -61 V
-127 -61 V
-126 -60 V
-127 -61 V
-126 -60 V
-127 -61 V
-127 -61 V
-126 -60 V
-127 -61 V
-126 -60 V
-127 -61 V
-126 -60 V
-1601 2591 Box
-1727 2578 Box
-1854 2446 Box
-1980 2362 Box
-2107 2275 Box
-2233 2198 Box
-2360 2117 Box
-2487 2054 Box
-2613 1982 Box
-2740 1919 Box
-2866 1860 Box
-2993 1796 Box
-3119 1735 Box
-3246 1676 Box
-3373 1614 Box
-3499 1554 Box
-3626 1494 Box
-3752 1433 Box
-3879 1372 Box
-4005 1312 Box
-4132 1251 Box
-4258 1191 Box
-4385 1130 Box
-4512 1069 Box
-4638 1009 Box
-4765 948 Box
-4891 888 Box
-5018 827 Box
-5144 767 Box
-4711 2440 Box
+0.58 0.00 0.83 C
+.9787 g 814 704 476 451 Rec fill
+1 g 1290 704 476 451 Rec fill
+.9372 g 1766 704 476 451 Rec fill
+.7637 g 2242 704 476 451 Rec fill
+.5319 g 2718 704 476 451 Rec fill
+.2238 g 3194 704 476 451 Rec fill
+.1245 g 3670 704 476 451 Rec fill
+.1331 g 4146 704 475 451 Rec fill
+.3059 g 4621 704 476 451 Rec fill
+.6223 g 814 1155 476 451 Rec fill
+.5157 g 1766 1155 476 451 Rec fill
+.4162 g 2242 1155 476 451 Rec fill
+.4984 g 2718 1155 476 451 Rec fill
+.4118 g 3194 1155 476 451 Rec fill
+.115 g 3670 1155 476 451 Rec fill
+.03 g 4146 1155 475 451 Rec fill
+.2121 g 4621 1155 476 451 Rec fill
+.5528 g 1766 1606 476 451 Rec fill
+.7435 g 2242 1606 476 451 Rec fill
+.3279 g 2718 1606 476 451 Rec fill
+.1774 g 3194 1606 476 451 Rec fill
+.1481 g 3670 1606 476 451 Rec fill
+.0116 g 4146 1606 475 451 Rec fill
+.0839 g 4621 1606 476 451 Rec fill
+.3993 g 5097 1606 476 451 Rec fill
+.7812 g 1290 2057 476 452 Rec fill
+.7944 g 1766 2057 476 452 Rec fill
+.3116 g 2242 2057 476 452 Rec fill
+.4563 g 2718 2057 476 452 Rec fill
+.1393 g 3194 2057 476 452 Rec fill
+.1254 g 3670 2057 476 452 Rec fill
+0 g 4146 2057 475 452 Rec fill
+.0729 g 4621 2057 476 452 Rec fill
+.4347 g 5097 2057 476 452 Rec fill
+.5856 g 1290 2509 476 451 Rec fill
+.5263 g 1766 2509 476 451 Rec fill
+.403 g 2242 2509 476 451 Rec fill
+.242 g 2718 2509 476 451 Rec fill
+.2283 g 3194 2509 476 451 Rec fill
+.1145 g 3670 2509 476 451 Rec fill
+.0123 g 4146 2509 475 451 Rec fill
+.0818 g 4621 2509 476 451 Rec fill
+.497 g 5097 2509 476 451 Rec fill
+.4744 g 5573 2509 476 451 Rec fill
+.5068 g 814 2960 476 451 Rec fill
+.3979 g 1290 2960 476 451 Rec fill
+.6501 g 1766 2960 476 451 Rec fill
+.9998 g 2242 2960 476 451 Rec fill
+.2965 g 2718 2960 476 451 Rec fill
+.2153 g 3194 2960 476 451 Rec fill
+.1462 g 3670 2960 476 451 Rec fill
+.0825 g 4146 2960 475 451 Rec fill
+.0876 g 4621 2960 476 451 Rec fill
+.1733 g 5097 2960 476 451 Rec fill
+.5356 g 5573 2960 476 451 Rec fill
+.4651 g 814 3411 476 451 Rec fill
+.6423 g 1290 3411 476 451 Rec fill
+.5206 g 1766 3411 476 451 Rec fill
+.3049 g 2242 3411 476 451 Rec fill
+.2176 g 2718 3411 476 451 Rec fill
+.1854 g 3194 3411 476 451 Rec fill
+.1435 g 3670 3411 476 451 Rec fill
+.0622 g 4146 3411 475 451 Rec fill
+.062 g 4621 3411 476 451 Rec fill
+.1321 g 5097 3411 476 451 Rec fill
+.2914 g 5573 3411 476 451 Rec fill
+.3329 g 814 3862 476 451 Rec fill
+.2486 g 1290 3862 476 451 Rec fill
+.1811 g 1766 3862 476 451 Rec fill
+.1658 g 2242 3862 476 451 Rec fill
+.1799 g 2718 3862 476 451 Rec fill
+.0838 g 3194 3862 476 451 Rec fill
+.0315 g 3670 3862 476 451 Rec fill
+.0173 g 4146 3862 475 451 Rec fill
+.0237 g 4621 3862 476 451 Rec fill
+.0749 g 5097 3862 476 451 Rec fill
+.0721 g 5573 3862 476 451 Rec fill
+.3427 g 6049 3862 476 451 Rec fill
+.3766 g 6525 3862 476 451 Rec fill
+.4768 g 7001 3862 476 451 Rec fill
 LTw
 % End plot #1
-% Begin plot #2
-1.000 UP
-1.000 UL
-LTb
-LCb setrgbcolor
-[] 0 setdash
-0.00 0.00 1.00 C
-LCb setrgbcolor
-1.000 UP
-1.000 UL
-LTb
-0.00 0.00 1.00 C
-4416 2220 M
-591 0 V
-1601 2591 M
-126 -13 V
-127 -62 V
-126 -64 V
-127 -59 V
-126 -29 V
-127 -123 V
-127 -83 V
-126 -124 V
-127 -117 V
-126 -193 V
-127 -129 V
-126 -121 V
-127 -190 V
-127 -158 V
-3499 921 L
-3626 816 L
-3752 709 L
-1601 2591 Box
-1727 2578 Box
-1854 2516 Box
-1980 2452 Box
-2107 2393 Box
-2233 2364 Box
-2360 2241 Box
-2487 2158 Box
-2613 2034 Box
-2740 1917 Box
-2866 1724 Box
-2993 1595 Box
-3119 1474 Box
-3246 1284 Box
-3373 1126 Box
-3499 921 Box
-3626 816 Box
-3752 709 Box
-4711 2220 Box
-LTw
-% End plot #2
 2.000 UL
 LTb
 LCb setrgbcolor
 [] 0 setdash
 1.000 UL
 LTb
-1474 2613 N
-0 -1909 V
-3797 0 V
-0 1909 V
--3797 0 V
+814 4313 N
+814 704 L
+6663 0 V
+0 3609 V
+-6663 0 V
 Z stroke
-1.000 UP
+stroke gsave	%% draw gray scale smooth box
+maxcolors 0 gt {/imax maxcolors def} {/imax 1024 def} ifelse
+7644 704 translate 333 3609 scale 0 setlinewidth
+/ystep 1 imax div def /y0 0 def /ii 0 def
+{ y0 g 0 y0 N 1 0 V 0 ystep V -1 0 f
+/y0 y0 ystep add def /ii ii 1 add def
+ii imax ge {exit} if } loop
+grestore 0 setgray
 1.000 UL
 LTb
+7644 704 N
+333 0 V
+0 3609 V
+-333 0 V
+0 -3609 V
+Z stroke
+1.000 UL
+LTb
+1.000 UL
+LTb
+7977 748 M
+-31 0 V
+-302 0 R
+31 0 V
+302 116 R
+-31 0 V
+-302 0 R
+31 0 V
+302 98 R
+-31 0 V
+-302 0 R
+31 0 V
+302 85 R
+-31 0 V
+-302 0 R
+31 0 V
+302 75 R
+-31 0 V
+-302 0 R
+31 0 V
+302 68 R
+-63 0 V
+stroke
+7644 1190 M
+63 0 V
+270 441 R
+-31 0 V
+-302 0 R
+31 0 V
+302 259 R
+-31 0 V
+-302 0 R
+31 0 V
+302 183 R
+-31 0 V
+-302 0 R
+31 0 V
+302 142 R
+-31 0 V
+-302 0 R
+31 0 V
+302 117 R
+-31 0 V
+-302 0 R
+31 0 V
+302 98 R
+-31 0 V
+-302 0 R
+31 0 V
+302 85 R
+-31 0 V
+-302 0 R
+31 0 V
+302 75 R
+-31 0 V
+-302 0 R
+31 0 V
+302 67 R
+-63 0 V
+stroke
+7644 2657 M
+63 0 V
+270 442 R
+-31 0 V
+-302 0 R
+31 0 V
+302 258 R
+-31 0 V
+-302 0 R
+31 0 V
+302 184 R
+-31 0 V
+-302 0 R
+31 0 V
+302 142 R
+-31 0 V
+-302 0 R
+31 0 V
+302 116 R
+-31 0 V
+-302 0 R
+31 0 V
+302 98 R
+-31 0 V
+-302 0 R
+31 0 V
+302 86 R
+-31 0 V
+-302 0 R
+31 0 V
+302 75 R
+-31 0 V
+-302 0 R
+31 0 V
+302 67 R
+-63 0 V
+stroke
+7644 4125 M
+63 0 V
+1.000 UP
+stroke
+grestore % colour palette end
 stroke
 grestore
 end

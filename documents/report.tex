@@ -1,17 +1,18 @@
 \documentclass[12pt]{article}
 	\usepackage{geometry}
 	\geometry{margin=1in}
+
 	\usepackage[utf8]{inputenc}
 	\usepackage{graphicx}
-	\usepackage{amsmath}
-	\usepackage{mathrsfs}
-	\usepackage{amssymb}
+	\graphicspath{{Include/}}
+	
+	\usepackage{amsmath, amssymb, mathrsfs}
 	\usepackage[backend=bibtex,style=numeric]{biblatex}
-	\usepackage{algorithm}
-	\usepackage{algpseudocode}
+	\addbibresource{./Include/bibliografia.bib}
+	
+	\usepackage{algorithm, algpseudocode, listings}
 	\usepackage{hyperref}
 
-	\addbibresource{bibliografia.bib}
 	
 	\title
 		{
@@ -155,42 +156,50 @@
 		operator to provide such new value. In this base class, what the call operator does is rather trivial:
 		it just calls the iteration function applied to the last value stored in the argument.\\
 		To be more precise, the operator has the signature
-		\begin{verbatim}
-			Traits::Vector Iterator::operator()(const std::deque<Vector>& past)
-		\end{verbatim}
+		\begin{lstlisting}[language=C++]
+	Traits::Vector
+	Iterator::operator()(const std::deque<Vector>& past)
+		\end{lstlisting}
 		It is intuitive that the \verb|past| parameter represents an object storing the past vectors assumed by a certain sequence.
-		The choice for the data structure to be an \verb|std::deque| will be clear when we will describe the \verb|FixedPointIterator| class.
-		
-		Concerning the constructor, the use of the so-called universal reference in combination with \verb|std::forward|
+		The choice for the data structure to be an \verb|std::deque| will be clear when we will describe the \verb|FixedPointIterator| class.\\
+		The constructor is
+		\begin{lstlisting}[language=C++]
+	template <class IterationFun>
+	Iterator(IterationFun && IF, std::size_t dim):
+	phi(std::forward<IterationFun>(IF)) ...
+		\end{lstlisting}
+		The use of the so-called universal reference in combination with \verb|std::forward|
 		allows to move the argument when possible (an \verb|std::function|, which is the type of the iteration function,
 		may potentially have a big size in the form of a function object).
 		
 		The \verb|Iterator| class is the base class for more advanced classes which try to speed-up the convergence
-		process.
+		process. The derived classes make use of polymorphism to overload the function call operator.\\
 		In fig. \ref{fig:1} is shown the inheritance diagram of the \verb|Iterator| class.
 		\begin{figure}
 			\includegraphics{./Include/inheritance.eps}
 			\centering
-			\caption{Inheritance diagram for the \texttt{Iterator} class}
+			\caption{\textit{Inheritance diagram for the} \texttt{Iterator} \textit{class}}
 			\label{fig:1}
 		\end{figure}
 		In addition to the \verb|AndersonAccelerator| class, another class called \verb|ASecantAccelerator| is provided,
-		wihch is a simpler version of Anderson in which the memory parameter has value two.\\
-		The derived classes make use of polymorphism to overload the function call operator.\\
+		wihch implements a simpler version of Anderson algorithm in which the memory parameter has value two.
+		
 		Let us dive deeper into the implementation of Anderson algorithm.
 		
 		
 		\subsection {Implementation of Anderson algorithm}
 		Equation \ref{eq:2} shows that to compute the next value of the sequence two matrices are needed:
 		$\mathscr{X}_k$ and $\mathscr{F}_k$.\\
-		If the \verb|Iterator| class is called all of a sudden
-		to compute the next value of a sequence given as input, the \verb|SetUp| method must be called to compute $\mathscr{X}_k$ and $\mathscr{F}_k$ up
-		to the values involving the last iteration (the function call operator takes care of the last part).
-		But most of the times Anderson iterations want to be kept running until convergence: for this reason we
-		store two matrices \verb|X| and \verb|F| which are updated only in the last column at each call of the call operator.\\
+		The \verb|AndersonAccelerator| class stores two matrices \verb|X| and \verb|F| which are updated 
+		only in the last column at each call of the call operator.\\
 		These two matrices have a special type to perform the update operation easily: it is the \verb|RotatingMatrix|
 		template class. The template argument is chosen to provide the most efficient insert strategy, the one in which
-		the new inserted column replaces the oldest column when the maximum size of the matrix has been reached.
+		the new inserted column replaces the oldest column when the maximum size of the matrix has been reached.\\
+		Since the call operator only updates the last column, it \textbf{can not} be called on a generic
+		vector sequence but only on a sequence that was produced by the class itself.
+		To circumvent this problem, the \verb|SetUp| method computes $\mathscr{X}_k$ and $\mathscr{F}_k$ up
+		to the values involving the last iteration. If an Anderson step wants to be applied to a vector sequence
+		produced in another way, the \verb|SetUp| method has to be called before the call operator.
 		
 		Concerning the update formula \ref{eq:2}, the term $\mathscr{F}_k^T \mathscr{F}_k^{-1}\mathscr{F}_k^T f_k$
 		represents the solution of a least square problem. It is well known that solving this so-called normal
@@ -199,9 +208,9 @@
 		Householder rank-revealing QR decomposition with column-pivoting is used, that is a good compromise
 		between numerical stability and efficiency.\\
 		Interestingly enough, the result of the update formula \ref{eq:2} is independent of the ordering of the columns
-		of $\mathscr{X}_k$ and $\mathscr{F}_k$. This is important since it 
+		of $\mathscr{X}_k$ and $\mathscr{F}_k$. This is relevant since 
 		the proper reordering of the columns of the \verb|RotatingMatrix| class would add another computational cost.\\		
-		This fact can be seen from the QR decomposition but is more easily seen from the normal equations.\\
+		The fact can be seen from the QR decomposition but is more easily seen from the normal equations.\\
 		Calling $P$ a generic permutation matrix (which has the property
 		that $P^T=P^{-1}$), swapping column of a matrix $A$ is achieved by performing the matrix multiplication $AP$.
 		Substituting $\mathscr{X}_k$ and $\mathscr{F}_k$ with their permuted counterpart, eq. \ref{eq:2} becomes
@@ -212,7 +221,7 @@
 		\begin{equation}
 			x_{k+1}=x_{k} + \beta f_k -(\mathscr{X}_k + \beta \mathscr{F}_k)P P^T (\mathscr{F}_k^T \mathscr{F}_k)^{-1} P P^T \mathscr{F}_k^T f_k
 		\end{equation}
-		By simplifying $P P^T$ one gets that the solution is invariant with respect to exchanging columns of $\mathscr{X}_k$ and $\mathscr{F}_k$.
+		By simplifying $P P^T$ we obtain that the solution is invariant with respect to permutation of columns of $\mathscr{X}_k$ and $\mathscr{F}_k$.
 		
 		One last note: \citeauthor{Walker} \cite{Walker} make use of factor-updating QR decomposition, which is a more efficient algorithm
 		for computing the QR factors of $\mathscr{F}_k$ from the ones of $\mathscr{F}_{k-1}$. We did not consider it in this project
@@ -225,21 +234,26 @@
 		It has the following private attributes:
 		\begin{itemize}
 		\item \verb|iterator|, an \verb|std::unique_ptr| to an \verb|Iterator| object that produces the iterates. The unique pointer
-		allows to compose an object in the polymorphic \verb|Iterator| family, for example an \verb|AndersonAccelerator| object
-		\item \verb|options|, an options struct, controlling maximum iterations, tolerances and printing styles
-		\item \verb|history|, an \verb|std::deque<Vector>| containing the history of the vector sequence. The choice of the
-		data structure is due to the fact that, when the number of vectors reaches the threshold of \verb|options::memory|, the last stored
-		vector is eliminated from the front and the new vector is added to the back. This operation is more suited for an
-		\verb|std::deque| rather than an \verb|std::vector|.
+		allows to compose an object in the polymorphic \verb|Iterator| family, for example an \verb|AndersonAccelerator| object.
+		\item \verb|options|, an options struct, controlling maximum iterations, tolerances and printing styles.
+		\item \verb|history|, an \verb|std::deque<Vector>| containing the history of the vector sequence.\\
+		\verb|std::deque| was prefered to \verb|std::vector| because when the number of stored vectors reaches the threshold
+		of \verb|options::memory|, the oldest vector is eliminated from the front and the new vector is added to the back.
+		This operation is much more efficient on \verb|std::deque|.
 		\item \verb|iteration|, an integer representing the number of executed iterations by the \verb|compute| method.
 		\end{itemize}
 		
-		Concerning the public member functions, the class  provides two \verb|compute| methods, one with no parameters and the second one
-		with an initial vector as a starting guess. These methods make use of the \verb|history| member to compute iterations until
+		Concerning the public member functions, the class  provides:
+		\begin{itemize}
+		\item a \verb|compute()| method taking no arguments
+		\item a \verb|compute(const Vector&)| method taking an initial vector as a starting guess
+		\item  methods to output a result (\verb|printResult| is one possibility).
+		\end{itemize}
+		The \verb|compute| methods make use of the \verb|history| member to compute iterations until
 		convergence. In fact, the initial guess is used only in the case \verb|history| is empty. If \verb|history| is empty
 		and no guess is provided, a default vector of zeros is used.\\
-		The \verb|printResult| method is one of the possibility to output a result.
 		
+		\section{Examples and applications}
 		
 		\subsection{A first example}
 			The file \verb|main_simple_problem.cpp| constitutes a first working example of the previously defined classes.\\
@@ -252,17 +266,63 @@
 			{\scriptsize
 			\input{./Include/simple_example_residuals.tex}}
 			\centering
-			\caption{Residual vs interation number for a simple 3D problem}
+			\caption{\textit{Residual vs Interation number for the nonlinear 3D problem}}
 			\label{fig:simple}
 			\end{figure}
 			
 			Figure \ref{fig:simple} shows the residual at each iteration when standard fixed-point iterations are used 
-			and when Anderson algorithm is used with mixing parameter $\beta$ equal to $1$ and memory parameter $m$ equal to $5$.
+			and when Anderson algorithm is used. Parameters of Anderson algorithm are $\beta=1$ and memory $m=5$.\\
 			Fixed-point iterations converge in $28$ iterations whereas Anderson algorithm converges in $17$.
-
-		\section{FEM application}
-		\label{sec:FEM}
-			aaa
+			
+		\subsection{A linear FEM example}
+			The file \verb|main_gauss_seidel.cpp| solves the heat equation, in the form of a diffusion
+			reaction problem, on a one-dimensional bar with Dirichlet condition on one side and Neumann condition on the other.
+			For further description, consult \cite{Formaggia}.\\
+			By FEM discretization (or equivalently by finite differences, since we are in 1D), a tridiagonal matrix is obtained.\\
+			We decided to implement the simple Gauss-Seidel iterative scheme, notoriously slow.
+			\begin{figure}
+			{\scriptsize
+			\input{./Include/gauss.tex}}
+			\centering
+			\caption{\textit{Residual vs Interation number for the Gauss-Seidel problem}}
+			\label{fig:Gauss}
+			\end{figure}
+			Using as parameters of Anderson algorithm the same as the example before, and as mesh size $25$, we can observe in fig.\ref{fig:Gauss} that Anderson
+			accelerator does a good job at accelerating this method: the Gauss-Seidel method would need $3339$ iterations
+			to converge!
+			
+			An analysis concerning the parameters $m$ and $\beta$ was carried out for this example. In fig. \ref{fig:Heat}
+			\begin{figure}
+			{\scriptsize
+			\input{./Include/heat_map.tex}}
+			\centering
+			\caption{\textit{Heat map of execution time with different values of the parameters $m$ and $\beta$: the darker means the code was faster. White squares means
+			convergence was not reached.}}
+			\label{fig:Heat}
+			\end{figure}
+			the heat map represents on a log scale the time needed to reach convergence.
+			Where the map is white, it means the iterations did not converge (they most likely
+			diverged). Every parameter set was repeated $10$ times to obtain an average execution time.\\
+			You can see that $\beta=1$ is by far the best choice, while for the memory parameter
+			several choices are good. For high number of the memory parameter, the code converged in less than
+			$30$	iterations, so increasing $m$ would not change the result.
+			
+			
+		\subsection{Alternating method}
+			Following the idea in paper \cite{Pratapa}, an alternating Anderson scheme was implemented.\\
+			The idea is to run simple fixed-point interations for a number $p$ of iterations, and then run
+			an Anderson step and keep alternating in such a way. It is particularly good when applied
+			to the Jacobi iterative scheme because it can be simply implemented
+			in a parallel architecture.\\
+			Since I am using a normal computer, I have used instead the Gauss-Seidel scheme of the previous example,
+			but changing two characters in the code would transform the Gauss-Seidel method into the Jacobi method,
+			without substantially changing the results.
+			
+			Implementation-wise, I chose to exploit all the functionalities provided by the interface
+			to implement the alternating scheme in	\verb|main_gauss_seidel.cpp|, rather than
+			wrapping \verb|AndersonAccelerator| into a suitable \verb|Iterator| class. 
+			The \verb|swap| method of \verb|std::unique_ptr| was used for alternating the \verb|AndersonAccelerator|
+			and the \verb|Iterator| classes stored in the \verb|FixedPointIterator| object.
 
 		\pagebreak			
 			\printbibliography[heading=bibintoc,

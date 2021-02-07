@@ -1,0 +1,9 @@
+set terminal epslatex size 16 cm, 8 cm color
+set output "heat_map.tex"
+set xlabel '$\beta$ (relaxation)'
+set ylabel '$m$ (memory)'
+#set palette rgbformulae 23,28,3
+set logscale cb
+set cblabel 'Time taken ($s$)'
+plot "heat_map_data.txt" matrix columnheaders rowheaders with image failsafe notitle
+#pause mouse key

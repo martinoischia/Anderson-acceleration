@@ -4,7 +4,7 @@
 
 namespace FixedPoint {
 	
-	Traits::Vector FixedPointIterator::compute()
+	bool FixedPointIterator::compute()
 	{
 		if (history.empty()) history.emplace_back ( Vector::Zero ( iterator-> getDimension()));
 		
@@ -19,7 +19,7 @@ namespace FixedPoint {
 			if (history.size() > options.memory) history.pop_front();
 		}		
 		
-		return history.back();
+		return currentDistance < options.tolerance;
 	}
 	
 	void FixedPointIterator::printResult (std::ostream & OS) const
