@@ -1,3 +1,8 @@
+//! @file main_testing_parameter.cpp
+//! @brief Produces a table of execution times of main_gauss_seidel
+//!
+//! Different columns correspond to different values of beta parameter of Anderson class,
+//! different rows correspond to different values of memory parameter
 #include <cstdlib>
 #include <iostream>
 #include <cstdio>
@@ -8,6 +13,7 @@
 #include <vector>
 #include <sstream>
 
+// Getting as string the output of a call to a shell command
 std::string exec ( const char* cmd ) 
 {
 	std::array<char, 128> buffer;

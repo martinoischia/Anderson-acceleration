@@ -5,6 +5,7 @@
 #include "FixedPointIterator.hpp"
 #include "GetPot"
 #include "Timing.hpp"
+#include <iomanip>
 
 //! @brief Gauss-Seidel solver
 //!
@@ -17,15 +18,15 @@ class LinearSolver
 	//constructor
 	LinearSolver(const int size): M(size){};
 	//call operator
-	Vector operator ()(const Vector x)
+	Vector operator ()(const Vector & x)
 	{
 		Vector y(M);
-		y[0] = ((To-Te)/Te + x[1])/(2.+h*h*act);
+		y[0] = ((To-Te)/Te + x[1])/( 2.+h*h*act );
 		for(int m=1; m < M-1; ++m)
 		{  
-			y[m]  = (y[m-1]+x[m+1])/(2.+h*h*act);
+			y[m]  = (y[m-1]+x[m+1])/( 2.+h*h*act );
 		}      
-      y[M-1] = y[M-2];
+		y[M-1] = y[M-2];
 		return y;
 	}
 	static constexpr double L= 40.;  // Bar length
@@ -40,12 +41,13 @@ class LinearSolver
 	//! Precomputed coefficient for adimensional form of equation
 	// mesh size
 	const double h=1./M;
-	
+
 };
 
 int main()
 {
 	std::cout << "\n********************EXAMPLE 3****************************\n\n";
+	std::cout << std::fixed;
 	using namespace FixedPoint;
 	using Vector = Traits::Vector;
 	using Matrix = Traits::Matrix;
@@ -139,4 +141,4 @@ int main()
 	}
 	std::cout <<" in "<< Iterations<<" Iterations."<<std::endl;
 	std::cout << "________________________________________________________"<< std::endl;	
-}
+}	

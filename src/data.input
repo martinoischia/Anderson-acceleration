@@ -36,10 +36,10 @@ GMRESiter = 30
 [FPI_3_param] # gauss seidel
 
 M = 25 # mesh size
-maxIter = 100000
-memory = 300
-printMemory = 5
+maxIter = 5000
+memory = 50
+printMemory = 50
 mixingParameter = 1
-AndersonMemory = 10
-tolerance = 1.e-10
-alternatingParameter = 10
+AndersonMemory = 8
+tolerance = 1.e-8
+alternatingParameter = 3

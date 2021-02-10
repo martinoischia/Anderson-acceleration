@@ -14,4 +14,6 @@ packages for creating the documentation with *make doc*.
 To consult documentation (which is suggested for
 approaching the code), open *index.html* in the generated *html* directory.
 
-Many other targets are present in the *Makefile* to build specific examples (check it out if you need).
+Many other targets are present in the *Makefile* to build specific examples or provide other tools (check it out if you need).
+
+The example main_linear_problem is not mentioned in the report but contains interesting stuff anyways.

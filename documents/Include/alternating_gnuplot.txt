@@ -1,0 +1,29 @@
+set terminal epslatex size 10 cm, 5 cm 
+set output "alternating.tex"
+#test
+#pause mouse key
+set xlabel '$p$'
+set ylabel 'time($s$)'
+set style line 1 lw 2 pt 6
+
+plot '-' using 1:2 ls 1 with linespoint notitle 
+2 0.0002305
+4 0.0001672
+6 0.000188
+8 0.000276
+10 0.0001695
+12 0.0002189
+14 0.0001265
+16 0.000128
+18 9.87e-05
+20 0.000109
+30 9.79e-05
+40 7.99e-05
+50 8.42e-05
+60 7.34e-05
+80 7.87e-05
+100 7.77e-05
+150 9.45e-05
+200 0.0001042
+e
+#pause mouse key

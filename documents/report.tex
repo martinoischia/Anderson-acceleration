@@ -16,10 +16,10 @@
 	
 	\title
 		{
-		\vspace{-30mm}\begin{figure}[h]
-		\centering
-		\includegraphics[width=2in]{./Include/logo_polimi.png}
-		\end{figure}
+		% \vspace{-30mm}\begin{figure}[h]
+		% \centering
+		% \includegraphics[width=2in]{./Include/logo_polimi.png}
+		% \end{figure}
 		Anderson Acceleration for Fixed-Point Iterations
 		}
 		
@@ -34,8 +34,10 @@
 			Firstly, develop a C++ interface for accelerating a converging sequence of vectors.
 			It should be at the same time open for extensions, in case the user wants to implement its own algorithm,
 			and efficient in the solution of large systems.\\
-			Secondly, making use of said interface to implement Anderson acceleration strategy and apply it on ...\\
-			The reader not interested in the C++ implementation can safely skip section \ref{sec:C++}.
+			Secondly, making use of said interface to implement Anderson acceleration strategy and apply it on
+			linear and nonlinear problems arising from the discretization of differential equations.\\
+			The reader not interested in the C++ implementation can safely skip section \ref{sec:C++}, even though
+			the classes described there are sometimes mentioned in section \ref{sec:app}.
 		\end{abstract}
 		\tableofcontents
 		\pagebreak
@@ -110,7 +112,7 @@
 		\section{C++ interface for fixed-point problems}
 		\label{sec:C++}
 		
-		\subsection{Overview}
+		\subsection{Overview of the code}
 
 		The code can be found at \href{https://github.com/martinoischia/Anderson-acceleration}{this link} and is subdivided into two directories:
 		\verb|Include| and \verb|src|.\\
@@ -126,7 +128,7 @@
 		An \verb|html| directory will be generated, containing an \verb|index.html| file. Open it in a web browser for consulting the documentation.
 		
 		In the next sections I will describe the most interesting features of the code, so again I redirect to the documentation the reader
-		who wants a complete picture of the functionalities provided by the inteface.\\
+		who wants a complete picture of the functionalities provided by the interface.\\
 		The code is based on two classes: \verb|Iterator|,
 		a functor that provides the next value of a sequence, and
 		\verb|FixedPointIterator|, which composes the former and
@@ -254,6 +256,7 @@
 		and no guess is provided, a default vector of zeros is used.\\
 		
 		\section{Examples and applications}
+			\label{sec:app}
 		
 		\subsection{A first example}
 			The file \verb|main_simple_problem.cpp| constitutes a first working example of the previously defined classes.\\
@@ -300,17 +303,21 @@
 			convergence was not reached.}}
 			\label{fig:Heat}
 			\end{figure}
-			the heat map represents on a log scale the time needed to reach convergence.
+			the heat map represents on a log-scale the time needed to reach convergence.
 			Where the map is white, it means the iterations did not converge (they most likely
-			diverged). Every parameter set was repeated $10$ times to obtain an average execution time.\\
+			diverged). For every parameter set the code was executed $10$ times to obtain an average execution time.\\
 			You can see that $\beta=1$ is by far the best choice, while for the memory parameter
 			several choices are good. For high number of the memory parameter, the code converged in less than
 			$30$	iterations, so increasing $m$ would not change the result.
 			
+			Also a simple profiling of the code has been performed, through \verb|gprof|. It showed
+			that most of the execution time for the Anderson iterations, by far, is spent
+			in the QR decomposition of the $\mathscr{F}_k$ matrix (run
+			\verb|make profiler| for seeing with your eyes in the generated \verb|profiling.txt| file).
 			
 		\subsection{Alternating method}
 			Following the idea in paper \cite{Pratapa}, an alternating Anderson scheme was implemented.\\
-			The idea is to run simple fixed-point interations for a number $p$ of iterations, and then run
+			The idea is to run simple fixed-point interations for a number $p$ of iterations, followed by
 			an Anderson step and keep alternating in such a way. It is particularly good when applied
 			to the Jacobi iterative scheme because it can be simply implemented
 			in a parallel architecture.\\
@@ -323,8 +330,177 @@
 			wrapping \verb|AndersonAccelerator| into a suitable \verb|Iterator| class. 
 			The \verb|swap| method of \verb|std::unique_ptr| was used for alternating the \verb|AndersonAccelerator|
 			and the \verb|Iterator| classes stored in the \verb|FixedPointIterator| object.
+			
+			Different values of the number $p$ have been tested for parameters $\beta=1$ and memory $m=8$, but very similar behaviour
+			is observed for different values of $m$. Fig. \ref{fig:tab1} shows that increasing $p$ to a value slightly greater than
+			$m$ accelerates the process. It is not shown in the figure, but note that the standard Anderson method converges in
+			about $0.0005 s$.\\
+			With the alternating method we were able to reach a speed-up of almost 10, which is quite impressive.
+			
+			% \begin{table}
+			% \resizebox{\textwidth}{!}{
+			% \begin{tabular}
+			% { |c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c| }
+			% \hline
+			% $p$ & 0 & 2	& 4 & 6 & 8 & 10 & 12 & 14 & 16 & 18\\
+			% \hline
+			% time ($10^{-4}s$) & 5.07 & 2.31 & 1.67 & 1.88 & 2.76 & 1.69 & 2.19 & 1.27 & 1.28 & 0.99\\
+			% \hline
+			% \end{tabular}}
+			% \end{table}
+			
+			\begin{figure}
+			{\scriptsize
+			\input{./Include/alternating.tex}}
+			\centering
+			\caption{\textit{Testing different values of parameter $p$ with $\beta=1$ and $m=8$}}
+			\label{fig:tab1}
+			\end{figure}
+			
+			
+			
+			\subsection{Nonlinear FEM example}
+			To study a nonlinear problem, we decided to add to the heat equation of previous examples a thermal radiation term.\\
+			At the discrete level, this means solving the nonlinear system of equations
+			\begin{equation}
+				\label{eq:non}
+				A u + \sigma I u^4 = f
+			\end{equation}
+			where $A$ is the same finite elements matrix corresponding to the previous example, whose exact form is found in
+			\cite{Formaggia}, $I$ is the identity matrix, $\sigma$ is the radiation coefficient and $f$ is an
+			appropriate right-hand side (I did not stick to the physics of the problem, because the radiation term
+			is usually negligible, so I assigned $\sigma=1$ and I did not account for necessary corrections of the right-hand
+			side).
+			
+			This formulation is easy to derive when we approximate the problem with finite differences, while
+			with the use of finite elements it is obtained through the lumping of the mass matrix, a procedure
+			used to avoid extra-diagonal terms.
+			
+			We solve system \ref{eq:non} written in a fixed-point form in the following manner:
+			\begin{equation}
+				u = (A+ \sigma I u^3)^{-1} f 
+			\end{equation}
+			resulting in the iterative scheme
+			\begin{equation}
+				\label{eq:nonfix}
+				u_{k+1}= (A+ \sigma I u^3_k)^{-1} f 
+			\end{equation}
+			This in turns results in solving at each step the linear system
+			\begin{equation}
+				(A+ \sigma I u^3_k) u_{k+1} = f
+			\end{equation}
+			which is always possible being the corresponding matrix positive definite.\\
+			This step was performed in the same manner of previous section, that is through the
+			\verb|FixedPointIterator| class, accelerating the Gauss-Seidel iterative procedure
+			with the alternating Anderson scheme.
+			We have therefore created a fixed-point problem inside another fixed-point problem.\\
+			In case the inner iterator does not converge, the code exits throwing a run-time
+			exception (but given a suitable number of iterations it should always converge
+			thanks to the properties of the Gauss-Seidel scheme).
+			
+			In fig. \ref{fig:nonlinear} you can see the residual history for the iterative scheme \ref{eq:nonfix}
+			for different solvers.
+			\begin{figure}
+				{\scriptsize
+			\input{./Include/nonlinear.tex}}
+			\centering
+			\caption{\textit{Residual vs Interation number for the nonlinear problem}}
+			\label{fig:nonlinear}
+			\end{figure}
+			The fixed-point solver has linear convergence, as it usually happens.
+			Anderson accelerator manages to speed-up significantly the fixed-point iterations and is able
+			to converge in very few iterations. Alternating Anderson seems not to benefit particularly of
+			the normal fixed-point iterations and much more from the Anderson step, but this can not be said
+			from just this figure.\\
+			The Newton method for problem \ref{eq:non} reads
+			\begin{equation}
+				x_{k+1}= x_k - (A+4 \sigma I x_k^3)^{-1}(A x_k + \sigma I x_k^4 - f)
+			\end{equation}
+			In the figure the Newton method has linear convergence and the slope is less steep than
+			the one of fixed-point \ref{eq:nonfix}.
+						
+			\subsection{Conclusions}
+			A C++ interface for fixed-point iterations was successfully implemented. It is quite simple
+			to use (just reference to the first example), and well documented. It is customizable and can be
+			used possibly with both sparse and dense matrices.
+			
+			The Anderson algorithm was implemented in
+			an efficient manner and a sufficiently stable algorithm for the QR decomposition of the
+			matrices involved was used (but this policy can be changed easily by just refering to the Eigen
+			library).\\
+			In all the examples made the Anderson algorithm was able to speed-up the computational
+			time.	On linear problems was extremely successful the alternating scheme in \cite{Pratapa}.
+			On the nonlinear heat equation, Anderson algorithm allowed to reach convergence in few
+			iterations and outperformed severly Newton method.\\
+			Further study should be made on more complex problems, increasing the dimensionality
+			of the system, and on different types of nonlinear problems.
 
-		\pagebreak			
+			\appendix
+			\section{Appendix}
+			\subsection{A C++ program for parameters testing}
+			This simple C++ code, which makes use of many Linux shell commands, was used in
+			the course of the project for performing several parameters tests.\\ 
+			I think it is worth reporting it here because it can be generalized (and improved) with little
+			effort and used very easily in similar contexts (that is where we have an input file
+			for getting parameters into the C++ code). Simple for loops inside the C++ code would not provide
+			the same flexibility and elegance.
+			
+			The following \verb|exec| function (source \cite{stack}), based on the shell command \verb|popen|, 
+			executes a command in the shell and returns the resulting output
+			in an \verb|std::string|.
+			
+			\begin{lstlisting}[language=C++]
+#include <cstdlib>
+#include <cstdio>
+
+std::string exec ( const char* cmd ) 
+{
+	std::array <char, 128> buffer;
+	std::string result;
+	std::unique_ptr <FILE, decltype(&pclose)> pipe
+				(popen(cmd, "r"), pclose);
+			
+	if (!pipe) {
+		throw std::runtime_error("popen() failed!");
+	}
+	while ( fgets(buffer.data(), buffer.size(), pipe.get() )
+						!= nullptr) 
+	{
+		result += buffer.data();
+	}
+	return result;
+}
+			\end{lstlisting}
+			It is utilized in the files whose name contain \verb|main_test|
+			in the following manner:
+			\begin{lstlisting}
+	std::vector <double > parameter {2, 4, ...};
+	std::ostringstream tmp;
+	tmp << "Parameter = " << parameter[i] << std::flush;
+	std::system ( ("sed -i '45s/.*/" + 
+	tmp.str() + "/' data.input").c_str() );
+	
+	double value = stod (exec("./main_gauss_seidel |
+	grep 'TIME: Alternating Anderson method' |
+			tr -dc '.0-9'"));
+			\end{lstlisting}
+			Explanation of the code:
+			\begin{itemize}
+				\item \verb|parameter| contains the values of the parameters we want to test.
+				\item \verb|tmp| is used to build the string we want to substitute in the input
+				file to change value of the parameter.
+				\item \verb|std::system| executes a command in the shell.
+				\item \verb|sed| is a shell command for editing files (\textit{stream editor}).
+				Used in that manner, it means replace line $45$ of \verb|data.input| with the string in
+				\verb|tmp| (+ is an operator of \verb|std::string| to concatenate them).
+				\item \verb|stod| converts the string returned by \verb|exec| into a double.
+				\item \verb|grep| and \verb|tr| are shell commands that I used to extract the desired characters
+				from the output of the \verb|main| function.
+			\end{itemize}
+				
+		
+
+
 			\printbibliography[heading=bibintoc,
 			title={Bibliography}]
 						
