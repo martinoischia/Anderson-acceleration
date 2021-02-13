@@ -43,3 +43,13 @@ mixingParameter = 1
 AndersonMemory = 8
 tolerance = 1.e-8
 alternatingParameter = 3
+
+[newton_param] # (outer) iterations of nonlinear example
+
+maxIter = 5000
+memory = 50
+printMemory = 50
+mixingParameter = 1
+AndersonMemory = 8
+tolerance = 1.e-8
+alternatingParameter = 3
