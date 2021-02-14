@@ -26,10 +26,10 @@ EIGEN_DIR=$(mkEigenInc)
 STANDARD=c++17
 # WARNING=-Wall
 
-# OPTFLAGS=-O3
-# DEFINE=-DNDEBUG
+OPTFLAGS=-O3
+DEFINE=-DNDEBUG
 
-OPTFLAGS=-g
+# OPTFLAGS=-g
 
 
 #============ following block should be all commented or all not commented

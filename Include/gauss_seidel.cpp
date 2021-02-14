@@ -66,7 +66,7 @@
 			//! mesh size
 			const double h=1./M;
 			//! The diagonal of the linear system
-			const Vector diagonal;
+			Vector diagonal;
 			//! Right-hand side
 			Vector rhs;
 			

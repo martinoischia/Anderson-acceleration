@@ -399,7 +399,8 @@
 			thanks to the properties of the Gauss-Seidel scheme).
 			
 			In fig. \ref{fig:nonlinear} you can see the residual history for the iterative scheme \ref{eq:nonfix}
-			for different solvers.
+			for different solvers. Here I increased the mesh size to 100 but the result did not change significantly
+			changing this parameter.
 			\begin{figure}
 				{\scriptsize
 			\input{./Include/nonlinear.tex}}
@@ -409,15 +410,14 @@
 			\end{figure}
 			The fixed-point solver has linear convergence, as it usually happens.
 			Anderson accelerator manages to speed-up significantly the fixed-point iterations and is able
-			to converge in very few iterations. Alternating Anderson seems not to benefit particularly of
-			the normal fixed-point iterations and much more from the Anderson step, but this can not be said
-			from just this figure.\\
+			to converge in very few iterations.\\
 			The Newton method for problem \ref{eq:non} reads
 			\begin{equation}
 				x_{k+1}= x_k - (A+4 \sigma I x_k^3)^{-1}(A x_k + \sigma I x_k^4 - f)
 			\end{equation}
-			In the figure the Newton method has linear convergence and the slope is less steep than
-			the one of fixed-point \ref{eq:nonfix}.
+			The convergence of Newton method is better than the one of Anderson.\\
+			Also a tentative Anderson acceleration of Newton sequence was tried,
+			but it only resulted in a slower convergence.
 						
 			\subsection{Conclusions}
 			A C++ interface for fixed-point iterations was successfully implemented. It is quite simple
@@ -431,7 +431,7 @@
 			In all the examples made the Anderson algorithm was able to speed-up the computational
 			time.	On linear problems was extremely successful the alternating scheme in \cite{Pratapa}.
 			On the nonlinear heat equation, Anderson algorithm allowed to reach convergence in few
-			iterations and outperformed severly Newton method.\\
+			iterations. As expected, it was not able to reach the performances of Newton method.\\
 			Further study should be made on more complex problems, increasing the dimensionality
 			of the system, and on different types of nonlinear problems.
 
