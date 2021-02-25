@@ -307,7 +307,10 @@
 			Where the map is white, it means the iterations did not converge (they most likely
 			diverged). For every parameter set the code was executed $10$ times to obtain an average execution time.\\
 			You can see that $\beta=1$ is by far the best choice, while for the memory parameter
-			several choices are good. For high number of the memory parameter, the code converged in less than
+			several choices are good (at least for the optimal $\beta$).\\
+			Therefore, in this simple linear case, the original formulation
+			of Anderson, which did not include the relaxation parameter, is the one that allows the faster convergence.\\
+			For high number of the memory parameter, the code converged in less than
 			$30$	iterations, so increasing $m$ would not change the result.
 			
 			Also a simple profiling of the code has been performed, through \verb|gprof|. It showed
@@ -364,10 +367,10 @@
 			At the discrete level, this means solving the nonlinear system of equations
 			\begin{equation}
 				\label{eq:non}
-				A u + \sigma I u^4 = f
+				A u + \sigma I h^2 u^4 = f
 			\end{equation}
 			where $A$ is the same finite elements matrix corresponding to the previous example, whose exact form is found in
-			\cite{Formaggia}, $I$ is the identity matrix, $\sigma$ is the radiation coefficient and $f$ is an
+			\cite{Formaggia}, $I$ is the identity matrix (last row is 0 for boundary conditions to be precise), $\sigma$ is the radiation coefficient and $f$ is an
 			appropriate right-hand side (I did not stick to the physics of the problem, because the radiation term
 			is usually negligible, so I assigned $\sigma=1$ and I did not account for necessary corrections of the right-hand
 			side).
@@ -378,16 +381,16 @@
 			
 			We solve system \ref{eq:non} written in a fixed-point form in the following manner:
 			\begin{equation}
-				u = (A+ \sigma I u^3)^{-1} f 
+				u = (A+ \sigma I h^2 u^3)^{-1} f 
 			\end{equation}
 			resulting in the iterative scheme
 			\begin{equation}
 				\label{eq:nonfix}
-				u_{k+1}= (A+ \sigma I u^3_k)^{-1} f 
+				u_{k+1}= (A+ \sigma I h^2 u^3_k)^{-1} f 
 			\end{equation}
 			This in turns results in solving at each step the linear system
 			\begin{equation}
-				(A+ \sigma I u^3_k) u_{k+1} = f
+				(A+ \sigma I h^2 u^3_k) u_{k+1} = f
 			\end{equation}
 			which is always possible being the corresponding matrix positive definite.\\
 			This step was performed in the same manner of previous section, that is through the
@@ -413,7 +416,7 @@
 			to converge in very few iterations.\\
 			The Newton method for problem \ref{eq:non} reads
 			\begin{equation}
-				x_{k+1}= x_k - (A+4 \sigma I x_k^3)^{-1}(A x_k + \sigma I x_k^4 - f)
+				x_{k+1}= x_k - (A+4 \sigma I h^2 x_k^3)^{-1}(A x_k + \sigma I x_k^4 - f)
 			\end{equation}
 			The convergence of Newton method is better than the one of Anderson.\\
 			Also a tentative Anderson acceleration of Newton sequence was tried,

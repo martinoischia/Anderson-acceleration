@@ -40,7 +40,7 @@ exec2:=
 
 # DEFINE+=-DEigenSolver
 LINK.o = $(CXX) $(LDFLAGS)
-CPPFLAGS=-I. -I../Include -I$(EIGEN_DIR) $(DEFINE) $(WARNING)
+CPPFLAGS=-std=$(STANDARD) -I. -I../Include -I$(EIGEN_DIR) $(DEFINE) $(WARNING)
 CXXFLAGS=-std=$(STANDARD) $(OPTFLAGS) $(WARNING)
 LDFLAGS=-std=$(STANDARD) $(OPTFLAGS) $(WARNING)
 LDLIBS=
@@ -48,7 +48,7 @@ LDLIBS=
 #==========================
 # Targets
 
-.phony= all clean distclean doc run makedep parameters $(exec1) $(exec2) $(exec3) $(exec4)
+.phony= all clean distclean doc run makedep parameters $(exec1) $(exec2) $(exec3) $(exec4) profiler
 
 .DEFAULT_GOAL = all
 
@@ -86,7 +86,7 @@ profiler: clean $(exec3)
 makedep: $(SRCS)
 	$(RM) make.dep
 	for f in $(SRCS); do \
-	$(CXX) $(STDFLAGS) $(CPPFLAGS) -MM $$f >> make.dep; \
+	$(CXX) $(CPPFLAGS) -MM $$f >> make.dep; \
 	done
 
 -include make.dep
