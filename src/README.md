@@ -24,4 +24,3 @@ possible TO DO list:
 - generalizing and improving the testing parameter (for example, instead of using a line number for sed,
 you should first search the line that matches it, or maybe use *sed* in a different way?). C++ regular expressions
 also are ok, but I don't want to parse a file and output a new file each time, better let *sed* do it.
-- write in the report the good observation that beta=1 is the Anderson without relaxation (good results in the linear case)

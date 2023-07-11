@@ -61,7 +61,7 @@ clean:
 
 doc:
 	doxygen Doxyfile
-
+#if i want to add makedep here I would have to write my linking of the execs, which I do not want to do....
 $(exec1): $(OBJS1)
 
 $(exec2): $(OBJS2)

@@ -13,6 +13,7 @@
 *.vrb
 *.nav 
 *.snm
+**/.vscode
 
 Presentazione\ PACS.pdf
 main_simple_problem
